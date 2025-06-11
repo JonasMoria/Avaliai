@@ -1,0 +1,63 @@
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    image: avaliai-api
+    container_name: avaliai-api
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/var/www
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=avaliai
+      - DB_USERNAME=root
+      - DB_PASSWORD=avaliai2025
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    image: avaliai-app
+    container_name: avaliai-app
+    restart: unless-stopped
+    ports:
+      - 8081:8080
+    volumes:
+      - ./app:/app
+    working_dir: /app
+    command: npm run serve
+
+  mysql:
+    image: mysql:8.0
+    container_name: avaliai-mysql
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=avaliai
+      - MYSQL_ROOT_PASSWORD=avaliai2025
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: avaliai-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=avaliai2025
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
