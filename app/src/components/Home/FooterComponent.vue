@@ -32,10 +32,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <hr class="my-6 border border-gray-200 sm:mx-auto lg:my-8" />
-    <div class="mx-auto w-full max-w-7xl p-4 py-6 lg:py-8">
-        <div class="sm:flex sm:items-center sm:justify-between">
+        <div class="sm:flex sm:items-center sm:justify-between mt-8">
             <span class="text-sm text-green-700 sm:text-center">© {{ currentYear }}
                 <router-link to="/" class="hover:underline">Avalia Ai!</router-link>. Todos os Direitos Reservados.
             </span>
