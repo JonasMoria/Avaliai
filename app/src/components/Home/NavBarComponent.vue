@@ -1,7 +1,9 @@
 <template>
 <nav class="bg-white p-4 border-b-2">
-    <div class="max-w-6xl mx-auto flex flex-row">
-        <img src="@/assets/images/sitelogo.png" alt="avaliaai_logo" class="h-6 md:h-8 ml-0 md:ml-10">
+    <div class="max-w-7xl mx-auto flex flex-row">
+        <router-link to="/">
+            <img src="@/assets/images/sitelogo.png" alt="avaliai_logo" class="h-6 md:h-8 ml-0 md:ml-10">
+        </router-link>
 
         <div class="flex items-center mx-auto w-7/12 md:w-5/12">
             <div class="relative w-full">
