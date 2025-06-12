@@ -66,7 +66,7 @@
                     </div>
                     <div class="mb-5 m-2">
                         <label for="repeat-pass" class="block mb-2 text-sm font-medium text-gray-900">Repita sua senha</label>
-                        <input v-model="payload.user.passwordConfirm" type="password" id="repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.user.password_confirmation" type="password" id="repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                     </div>
 
                     <div class="mb-5 m-2">
@@ -120,7 +120,7 @@
                     </div>
                     <div class="mb-5 m-2">
                         <label for="repeat-pass" class="block mb-2 text-sm font-medium text-gray-900">Repita sua senha</label>
-                        <input v-model="payload.enterprise.passwordConfirm" type="password" id="enterprise_repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.enterprise.password_confirmation" type="password" id="enterprise_repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                     </div>
                     <div class="mb-5 m-2">
                         <div class="flex items-start mb-5">
@@ -178,7 +178,7 @@ export default {
                     cpf: '',
                     email: '',
                     password: '',
-                    passwordConfirm: ''
+                    password_confirmation: ''
                 },
                 enterprise: {
                     name: '',
@@ -186,7 +186,7 @@ export default {
                     cpnj: '',
                     email: '',
                     password: '',
-                    passwordConfirm: ''
+                    password_confirmation: ''
                 }
             }
         }
