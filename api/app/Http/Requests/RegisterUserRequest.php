@@ -15,16 +15,17 @@ class RegisterUserRequest extends FormRequest {
         return [
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
-            'cpf' => [
-                'required',
-                'string',
-                'regex:/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/',
-                'unique:users,cpf',
-            ],
+            'cpf' => ['required', 'string', 'size:11', 'unique:users,cpf'],
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required_with:password|same:password',
         ];
+    }
+
+    public function prepareForValidation(): void {
+        $this->merge([
+            'cpf' => preg_replace('/[^\d]/', '', $this->cpf),
+        ]);
     }
 
     public function messages(): array {
@@ -52,6 +53,7 @@ class RegisterUserRequest extends FormRequest {
         $message = $errors[0] ?? 'Erro de validação';
 
         throw new HttpResponseException(response()->json([
+            'status' => 422,
             'message' => $message,
         ], 422));
     }
