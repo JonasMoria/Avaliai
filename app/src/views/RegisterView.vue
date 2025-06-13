@@ -109,7 +109,7 @@
                         </div>
                         <div class="m-2 w-6/12">
                             <label for="tradename" class="block mb-2 text-sm font-medium text-gray-900">Nome Fantasia</label>
-                            <input v-model="payload.user.tradename" type="text" id="tradename" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                            <input v-model="payload.enterprise.tradename" type="text" id="tradename" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                         </div>
                     </div>
                     <div class="mb-5 m-2">
@@ -136,7 +136,7 @@
                             <label for="enterprise_terms" class="ms-2 text-xs font-medium text-gray-900">Eu li e concordo com os <router-link to="/" class="text-green-700 hover:underline ">termos e condições</router-link></label>
                         </div>
                         <div class="w-full text-center mt-2">
-                            <button type="button" class="bg-green-800 text-center text-white text-sm rounded-md p-2 pl-3 pr-3">Cadastrar</button>
+                            <button @click="registerEnterprise()" type="button" class="bg-green-800 text-center text-white text-sm rounded-md p-2 pl-3 pr-3">Cadastrar</button>
                         </div>
                     </div>
 
@@ -194,7 +194,7 @@ export default {
                 enterprise: {
                     name: '',
                     tradename: '',
-                    cpnj: '',
+                    cnpj: '',
                     email: '',
                     password: '',
                     password_confirmation: ''
@@ -254,6 +254,35 @@ export default {
                     return;
 
                 }).catch((error) => {
+                    this.isRequesting = false;
+                    this.alert.show = true;
+                    this.alert.success = false;
+
+                    if (error.response && error.response.status == 422) {
+                        this.alert.message = error.response.data.message;
+                    } else {
+                        this.alert.message = 'Serviço indisponível no momento. Por favor, aguarde ou contate nosso suporte!';
+                    }
+                });
+        },
+
+        registerEnterprise: function () {
+            this.resetAlert();
+
+            if (!this.checkTermsAccepted()) {
+                return;
+            }
+
+            this.isRequesting = true;
+            api.post('/enterprise/register', this.payload.enterprise)
+                .then((response) => {
+                    this.isRequesting = false;
+                    this.alert.show = true;
+                    this.alert.success = true;
+                    this.alert.message = response.data.message;
+                    return;
+                })
+                .catch((error) => {
                     this.isRequesting = false;
                     this.alert.show = true;
                     this.alert.success = false;
