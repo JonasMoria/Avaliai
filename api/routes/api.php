@@ -11,3 +11,7 @@ Route::get('/ping', function () {
 // public
 Route::post('/user/register', [UserController::class, 'register']);
 Route::post('/enterprise/register', [EnterpriseController::class, 'register']);
+
+// User routes
+Route::post('/user/login', [UserController::class, 'login']);
+Route::middleware(['auth:sanctum'])->get('/user/me', [UserController::class, 'me']);

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
+import HomeUserView from '@/views/user/HomeUserView.vue'
 
 const routes = [
   {
@@ -22,6 +23,13 @@ const routes = [
     component: LoginView,
     meta: {title: 'Avalia Ai! - Entrar'}
   },
+
+  {
+    path: '/usuario/home',
+    name: 'Usuario Home',
+    component: HomeUserView,
+    meta: {title: 'Avalia Ai! - Dashboard'}
+  }
 ]
 
 const router = createRouter({

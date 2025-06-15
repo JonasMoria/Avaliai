@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller {
 
@@ -22,5 +24,13 @@ class UserController extends Controller {
             'message' => 'Conta pessoal criada com sucesso! Por favor, realize seu login.',
             'data' => $user
         ], 201);
+    }
+
+    public function login (LoginRequest $request) {
+        return $this->userService->login($request->validated());
+    }
+
+    public function me(): JsonResponse {
+        return response()->json(Auth::user());
     }
 }

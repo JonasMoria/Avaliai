@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\WelcomeUserMail;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,5 +25,26 @@ class UserService {
 
     protected function sanitizeCpf(string $cpf): string {
         return preg_replace('/\D/', '', $cpf);
+    }
+
+    public function login (array $credentials): JsonResponse {
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Usuário ou senha inválidos'
+            ], 401);
+        }
+
+        $token = $user->createToken('auth-token');
+        $token->accessToken->expires_at = now()->addHours(2);
+        $token->accessToken->save();
+
+        return response()->json([
+            'status' => 200,
+            'token' => $token->plainTextToken,
+            'user' => $user,
+        ], 200);
     }
 }
