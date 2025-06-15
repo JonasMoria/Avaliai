@@ -41,6 +41,8 @@ class UserService {
         $token->accessToken->expires_at = now()->addHours(2);
         $token->accessToken->save();
 
+        $user->type = 1; // set user login type
+
         return response()->json([
             'status' => 200,
             'token' => $token->plainTextToken,

@@ -207,6 +207,7 @@ export default {
         setFormType: function (type) {
             this.formType = type;
             this.payload.accountType = type;
+            this.resetAlert();
         },
         backForm: function () {
             this.formType = 0;
