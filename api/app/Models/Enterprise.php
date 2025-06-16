@@ -22,4 +22,8 @@ class Enterprise extends Model {
         'password',
         'remember_token',
     ];
+
+    public function revokeAllTokens(): void {
+        $this->tokens()->delete();
+    }
 }

@@ -50,4 +50,13 @@ class EnterpriseService {
             'user' => $enterprise,
         ], 200);
     }
+
+    public function logout (Enterprise $enterprise): JsonResponse {
+        $enterprise->revokeAllTokens();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Logout realizado com sucesso'
+        ], 200);
+    }
 }

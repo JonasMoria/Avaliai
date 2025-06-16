@@ -34,4 +34,8 @@ class EnterpriseController extends Controller {
     public function me(): JsonResponse {
         return response()->json(Auth::user());
     }
+
+    public function logout (Request $request) {
+        return $this->enterpriseService->logout($request->user());
+    }
 }

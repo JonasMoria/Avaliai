@@ -1,5 +1,6 @@
 import router from "@/router"
 import localBase from "./LocalBase"
+import api from "@/services/api"
 
 const Utils = {
     maskCpf: (cpf) => {
@@ -32,22 +33,55 @@ const Utils = {
     },
 
     checkUserAlreadyLogged: () => {
-        const userSession = JSON.parse(
-            localBase.select(localBase.keys.login.user)
-        );
-        const enterpriseSession = JSON.parse(
-            localBase.select(localBase.keys.login.enteprise)
-        );
+        try {
+            const userSession = JSON.parse(
+                localBase.select(localBase.keys.login.user)
+            );
+            const enterpriseSession = JSON.parse(
+                localBase.select(localBase.keys.login.enteprise)
+            );
 
-        if (userSession) {
-            return router.push({
-                path: '/usuario/home'
-            });
+            if (userSession) {
+                return router.push({
+                    path: '/usuario/home'
+                });
+            }
+            if (enterpriseSession) {
+                return router.push({
+                    path: '/empresa/home'
+                });
+            }
+        } catch (error) {
+            return;
         }
-        if (enterpriseSession) {
-            return router.push({
-                path: '/empresa/home'
-            });
+    },
+
+    logoutApi: () => {
+        try {
+            const userSession = JSON.parse(
+                localBase.select(localBase.keys.login.user)
+            );
+            const enterpriseSession = JSON.parse(
+                localBase.select(localBase.keys.login.enteprise)
+            );
+
+            if (userSession) {
+                api.post('/user/logout', {}, {
+                    headers: {
+                        Authorization: `Bearer ${userSession.token}`
+                    }
+                });
+            }
+
+            if (enterpriseSession) {
+                api.post('/enterprise/logout', {}, {
+                    headers: {
+                        Authorization: `Bearer ${enterpriseSession.token}`
+                    }
+                });
+            }
+        } catch (error) {
+            return;
         }
     },
 

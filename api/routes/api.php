@@ -26,10 +26,12 @@ Route::middleware(['auth:sanctum'])->group(function() {
     // User
     Route::prefix('/user')->group(function() {
         Route::get('/me', [UserController::class, 'me']);
+        Route::post('/logout', [UserController::class, 'logout']);
     });
 
     // Enterprise
     Route::prefix('/enterprise')->group(function() {
         Route::get('/me', [EnterpriseController::class, 'me']);
+        Route::post('/logout', [EnterpriseController::class, 'logout']);
     });
 });

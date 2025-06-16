@@ -49,4 +49,13 @@ class UserService {
             'user' => $user,
         ], 200);
     }
+
+    public function logout(User $user): JsonResponse {
+        $user->revokeAllTokens();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Logout realizado com sucesso'
+        ], 200);
+    }
 }

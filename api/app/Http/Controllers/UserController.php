@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller {
@@ -32,5 +33,9 @@ class UserController extends Controller {
 
     public function me(): JsonResponse {
         return response()->json(Auth::user());
+    }
+
+    public function logout(Request $request) {
+        return $this->userService->logout($request->user());
     }
 }

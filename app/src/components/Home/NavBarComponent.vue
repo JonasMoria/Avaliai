@@ -91,12 +91,16 @@ export default {
         manageSideNav: function () {
             this.isSideNavOpen = !this.isSideNavOpen;
         },
+
         toggleDropdown() {
             this.isDropdownOpen = !this.isDropdownOpen;
         },
+
         logout() {
+            Utils.logoutApi();
             Utils.destroySession();
         },
+
         handleClickOutside(event) {
             if (!this.$el.contains(event.target)) {
                 this.isDropdownOpen = false;
