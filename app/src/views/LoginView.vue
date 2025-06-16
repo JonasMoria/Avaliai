@@ -180,34 +180,59 @@ export default {
                     this.alert.message = 'Serviço indisponível no momento. Por favor, aguarde ou contate nosso suporte!';
                 }
             })
+        },
+
+        checkExpiredSession: function () {
+            const route = useRoute();
+            const isExpired = route.query.expired;
+
+            if (isExpired) {
+                const typeAccount = route.query.type;
+                switch (typeAccount) {
+                    case 'user':
+                        this.setFormType(1);
+                        this.alert.show = true;
+                        this.alert.success = false;
+                        this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
+                        break;
+
+                    case 'enterprise':
+                        this.setFormType(2);
+                        this.alert.show = true;
+                        this.alert.success = false;
+                        this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        },
+
+        checkUserAlreadyLogged: function () {
+            const userSession = JSON.parse(
+                localBase.select(localBase.keys.login.user)
+            );
+            const enterpriseSession = JSON.parse(
+                localBase.select(localBase.keys.login.enteprise)
+            );
+
+            if (userSession) {
+                return router.push({
+                    path: '/usuario/home'
+                });
+            }
+            if (enterpriseSession) {
+                return router.push({
+                    path: '/empresa/home'
+                });
+            }
         }
     },
 
     created() {
-        const route = useRoute();
-        const isExpired = route.query.expired;
-
-        if (isExpired) {
-            const typeAccount = route.query.type;
-            switch (typeAccount) {
-                case 'user':
-                    this.setFormType(1);
-                    this.alert.show = true;
-                    this.alert.success = false;
-                    this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
-                    break;
-
-                case 'enterprise':
-                    this.setFormType(2);
-                    this.alert.show = true;
-                    this.alert.success = false;
-                    this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
-                    break;
-
-                default:
-                    break;
-            }
-        }
+        this.checkExpiredSession();
+        this.checkUserAlreadyLogged();
     }
 }
 </script>
