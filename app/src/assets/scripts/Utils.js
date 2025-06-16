@@ -85,6 +85,18 @@ const Utils = {
         }
     },
 
+    getEnterpriseSessionToken: function() {
+        const enterpriseSession = JSON.parse(
+            localBase.select(localBase.keys.login.enteprise)
+        );
+
+        if (enterpriseSession.token !== undefined && enterpriseSession.token) {
+            return enterpriseSession.token;
+        }
+
+        return '';
+    },
+
     destroySession: () => {
         localBase.remove(localBase.keys.login.user);
         localBase.remove(localBase.keys.login.enteprise);
