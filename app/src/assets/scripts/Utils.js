@@ -1,3 +1,6 @@
+import router from "@/router"
+import localBase from "./LocalBase"
+
 const Utils = {
   maskCpf: (cpf) => {
     if (!cpf) return ''
@@ -26,6 +29,26 @@ const Utils = {
     value = value.replace(/(\d{4})(\d)/, '$1-$2')
 
     return value
+  },
+
+  checkUserAlreadyLogged: () => {
+      const userSession = JSON.parse(
+          localBase.select(localBase.keys.login.user)
+      );
+      const enterpriseSession = JSON.parse(
+          localBase.select(localBase.keys.login.enteprise)
+      );
+
+      if (userSession) {
+          return router.push({
+              path: '/usuario/home'
+          });
+      }
+      if (enterpriseSession) {
+          return router.push({
+              path: '/empresa/home'
+          });
+      }
   }
 }
 

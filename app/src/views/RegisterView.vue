@@ -295,6 +295,10 @@ export default {
                     }
                 });
         }
+    },
+
+    created() {
+        Utils.checkUserAlreadyLogged();
     }
 }
 </script>

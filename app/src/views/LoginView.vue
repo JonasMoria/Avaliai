@@ -78,6 +78,7 @@ import router from '@/router';
 import {
     useRoute
 } from 'vue-router';
+import Utils from '@/assets/scripts/Utils';
 
 export default {
     name: 'LoginView',
@@ -208,31 +209,11 @@ export default {
                 }
             }
         },
-
-        checkUserAlreadyLogged: function () {
-            const userSession = JSON.parse(
-                localBase.select(localBase.keys.login.user)
-            );
-            const enterpriseSession = JSON.parse(
-                localBase.select(localBase.keys.login.enteprise)
-            );
-
-            if (userSession) {
-                return router.push({
-                    path: '/usuario/home'
-                });
-            }
-            if (enterpriseSession) {
-                return router.push({
-                    path: '/empresa/home'
-                });
-            }
-        }
     },
 
     created() {
         this.checkExpiredSession();
-        this.checkUserAlreadyLogged();
+        Utils.checkUserAlreadyLogged();
     }
 }
 </script>
