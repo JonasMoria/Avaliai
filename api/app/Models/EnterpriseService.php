@@ -13,6 +13,7 @@ class EnterpriseService extends Model {
         'name',
         'image',
         'type',
+        'postalCode',
         'street',
         'number',
         'neighborhood',

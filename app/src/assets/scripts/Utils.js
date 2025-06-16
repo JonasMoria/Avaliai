@@ -32,6 +32,39 @@ const Utils = {
         return value
     },
 
+    maskPhone: (phone) => {
+        if (!phone) return ''
+
+        let value = phone.replace(/\D/g, '')
+        value = value.slice(0, 11)
+
+        if (value.length <= 10) {
+            value = value.replace(/^(\d{2})(\d)/, '($1) $2')
+            value = value.replace(/(\d{4})(\d)/, '$1-$2')
+        } else {
+            value = value.replace(/^(\d{2})(\d)/, '($1) $2')
+            value = value.replace(/(\d{5})(\d)/, '$1-$2')
+        }
+
+        return value
+    },
+
+    maskCep: (cep) => {
+        if (!cep) return ''
+
+        let value = cep.replace(/\D/g, '')
+
+        value = value.slice(0, 8)
+
+        value = value.replace(/^(\d{5})(\d)/, '$1-$2')
+
+        return value
+    },
+
+    keepNumbersOnly: function (value) {
+        return value.replace(/\D/g, '');
+    },
+
     checkUserAlreadyLogged: () => {
         try {
             const userSession = JSON.parse(
@@ -85,7 +118,7 @@ const Utils = {
         }
     },
 
-    getEnterpriseSessionToken: function() {
+    getEnterpriseSessionToken: function () {
         const enterpriseSession = JSON.parse(
             localBase.select(localBase.keys.login.enteprise)
         );

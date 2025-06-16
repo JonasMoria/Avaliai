@@ -16,6 +16,7 @@ class EnterpriseServiceRequest extends FormRequest {
             'name' => 'required|string|max:255',
             'image' => 'nullable|image|max:2048',
             'type' => 'required|string',
+            'postalCode' => 'required|string',
             'street' => 'required|string',
             'number' => 'required|string',
             'neighborhood' => 'required|string',
@@ -39,6 +40,9 @@ class EnterpriseServiceRequest extends FormRequest {
 
             'type.required' => 'O campo tipo é obrigatório.',
             'type.string' => 'O campo tipo deve ser um texto.',
+
+            'postalCode.required' => 'O campo CEP é obrigatório',
+            'postalCode.string' => 'O campo CEP deve ser um texto',
 
             'street.required' => 'O campo rua é obrigatório.',
             'street.string' => 'O campo rua deve ser um texto.',

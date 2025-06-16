@@ -12,7 +12,8 @@ class EnterpriseServiceService {
         }
 
         $data['enterprise_id'] = $enterpriseId;
-        $data['phone'] = $this->sanitizePhone($data['phone']);
+        $data['phone'] = $this->numbersOnly($data['phone']);
+        $data['postalCode'] = $this->numbersOnly($data['postalCode']);
 
         $enterpriseService = EnterpriseService::create($data);
 
@@ -23,7 +24,7 @@ class EnterpriseServiceService {
         ], 201);
     }
 
-    protected function sanitizePhone(string $phone): string {
+    protected function numbersOnly(string $phone): string {
         return preg_replace('/\D/', '', $phone);
     }
 }

@@ -34,11 +34,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <div>
                         <label for="postalCode" class="block text-sm font-medium text-gray-700">CEP</label>
-                        <input v-model="payload.postalCode" id="postalCode" type="text" required class="mt-1 w-full border rounded px-3 py-2" />
+                        <input @input="[searchAddressByPostalCode(), maskPostalCode()]" v-model="payload.postalCode" id="postalCode" type="text" required class="mt-1 w-full border rounded px-3 py-2" />
                     </div>
                     <div>
                         <label for="street" class="block text-sm font-medium text-gray-700">Rua</label>
-                        <input v-model="payload.street" id="street" type="text" required class="mt-1 w-full border rounded px-3 py-2" />
+                        <input v-model="payload.street" id="street" type="text" required class="mt-1 w-full border rounded px-3 py-2" :placeholder="searchingPlaceHolder" />
                     </div>
                     <div>
                         <label for="number" class="block text-sm font-medium text-gray-700">Número</label>
@@ -46,11 +46,11 @@
                     </div>
                     <div>
                         <label for="neighborhood" class="block text-sm font-medium text-gray-700">Bairro</label>
-                        <input v-model="payload.neighborhood" id="neighborhood" type="text" required class="mt-1 w-full border rounded px-3 py-2" />
+                        <input v-model="payload.neighborhood" id="neighborhood" type="text" required class="mt-1 w-full border rounded px-3 py-2" :placeholder="searchingPlaceHolder" />
                     </div>
                     <div>
                         <label for="city" class="block text-sm font-medium text-gray-700">Cidade</label>
-                        <input v-model="payload.city" id="city" type="text" required class="mt-1 w-full border rounded px-3 py-2" />
+                        <input v-model="payload.city" id="city" type="text" required class="mt-1 w-full border rounded px-3 py-2" :placeholder="searchingPlaceHolder" />
                     </div>
                     <div>
                         <label for="state" class="block text-sm font-medium text-gray-700">Estado</label>
@@ -95,7 +95,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700">Telefone</label>
-                        <input v-model="payload.phone" id="phone" type="tel" required class="mt-1 w-full border rounded px-3 py-2" />
+                        <input @input="maskPhone()" v-model="payload.phone" id="phone" type="tel" required class="mt-1 w-full border rounded px-3 py-2" />
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
@@ -137,6 +137,7 @@ export default {
     data() {
         return {
             isRequesting: false,
+            searchingPlaceHolder: '',
 
             alert: {
                 show: false,
@@ -147,6 +148,7 @@ export default {
                 name: '',
                 image: null,
                 type: '',
+                postalCode: '',
                 street: '',
                 number: '',
                 neighborhood: '',
@@ -161,6 +163,38 @@ export default {
     },
 
     methods: {
+        maskPhone: function () {
+            this.payload.phone = Utils.maskPhone(this.payload.phone);
+        },
+        maskPostalCode: function () {
+            this.payload.postalCode = Utils.maskCep(this.payload.postalCode);
+        },
+
+        searchAddressByPostalCode: function () {
+            const postalCode = Utils.keepNumbersOnly(this.payload.postalCode);
+
+            if (postalCode.length !== 8) {
+                return;
+            }
+
+            this.searchingPlaceHolder = 'Buscando...';
+
+            api.get(`https://viacep.com.br/ws/${postalCode}/json/`)
+                .then((response) => {
+                    this.searchingPlaceHolder = '';
+                    const data = response.data;
+
+                    this.payload.street = data.logradouro || '';
+                    this.payload.neighborhood = data.bairro || '';
+                    this.payload.city = data.localidade || '';
+                    this.payload.state = data.uf || '';
+                })
+                .catch((error) => {
+                    this.searchingPlaceHolder = '';
+                });
+
+        },
+
         putNewService: function () {
             if (this.isRequesting) {
                 return;
