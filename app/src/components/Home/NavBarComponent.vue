@@ -34,9 +34,9 @@
                         <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
                     </div>
                     <div v-if="sessionData.type == 2">
-                        <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
-                        <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Meus Serviços</router-link>
-                        <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
+                        <router-link :to="systemRoutes.enterprise.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                        <router-link :to="systemRoutes.enterprise.services" class="block px-4 py-2 text-sm hover:bg-gray-100">Meus Serviços</router-link>
+                        <router-link :to="systemRoutes.enterprise.reviews" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
                     </div>
 
                     <button @click="logout()" class="block w-full text-left px-4 py-2 text-sm font-semibold text-red-600 hover:bg-gray-100 mt-4">Sair</button>
@@ -70,9 +70,9 @@
                     <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
                 </div>
                 <div v-if="sessionData.type == 2">
-                    <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
-                    <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Meus Serviços</router-link>
-                    <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
+                    <router-link :to="systemRoutes.enterprise.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                    <router-link :to="systemRoutes.enterprise.services" class="block px-4 py-2 text-sm hover:bg-gray-100">Meus Serviços</router-link>
+                    <router-link :to="systemRoutes.enterprise.reviews" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
                 </div>
                 <button @click="logout()" class="block w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Sair</button>
             </div>
@@ -99,6 +99,13 @@ export default {
                 type: 0,
                 perfilImageSrc: null,
                 redirectHomeTo: ''
+            },
+            systemRoutes: {
+                enterprise: {
+                    account: '/empresa/conta',
+                    services: '/empresa/servicos',
+                    reviews: '/empresa/avaliacoes'
+                }
             }
         }
     },
