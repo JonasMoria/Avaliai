@@ -75,6 +75,9 @@ import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import api from '@/services/api';
 import localBase from '@/assets/scripts/LocalBase';
 import router from '@/router';
+import {
+    useRoute
+} from 'vue-router';
 
 export default {
     name: 'LoginView',
@@ -122,21 +125,25 @@ export default {
         login: function () {
             this.clearAlert();
 
+            if (!this.formType) {
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = 'Por favor, Selecione o seu tipo de perfil';
+            }
+
             let url = '';
             let loginKey = null;
+            let redirectTo = '';
+
             if (this.formType == 1) {
                 url = '/user/login';
                 loginKey = localBase.keys.login.user;
+                redirectTo = '/usuario/home';
             }
             if (this.formType == 2) {
                 url = '/enterprise/login';
                 loginKey = localBase.keys.login.enteprise;
-            }
-
-            if (!url) {
-                this.alert.show = true;
-                this.alert.success = false;
-                this.alert.message = 'Por favor, Selecione o seu tipo de perfil';
+                redirectTo = '/empresa/home';
             }
 
             this.isRequesting = true;
@@ -147,10 +154,13 @@ export default {
                 this.isRequesting = false;
 
                 if (response.status == 200) {
+                    localBase.remove(localBase.keys.login.user);
+                    localBase.remove(localBase.keys.login.enteprise);
+
                     const userInfo = response.data;
                     localBase.insert(loginKey, JSON.stringify(userInfo));
                     router.push({
-                        path: '/usuario/home'
+                        path: redirectTo
                     })
                     return;
                 }
@@ -170,6 +180,33 @@ export default {
                     this.alert.message = 'Serviço indisponível no momento. Por favor, aguarde ou contate nosso suporte!';
                 }
             })
+        }
+    },
+
+    created() {
+        const route = useRoute();
+        const isExpired = route.query.expired;
+
+        if (isExpired) {
+            const typeAccount = route.query.type;
+            switch (typeAccount) {
+                case 'user':
+                    this.setFormType(1);
+                    this.alert.show = true;
+                    this.alert.success = false;
+                    this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
+                    break;
+
+                case 'enterprise':
+                    this.setFormType(2);
+                    this.alert.show = true;
+                    this.alert.success = false;
+                    this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 }
