@@ -23,4 +23,9 @@ class EnterpriseServiceController extends Controller {
         $enterprise = Auth::user();
         return $this->service->getServicesByEnterprise($enterprise);
     }
+
+    public function remove(int $id): JsonResponse {
+        $enterprise = Auth::user();
+        return $this->service->deleteService($enterprise->id, $id);
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 namespace App\Services;
 
-use App\Models\Enterprise;
 use App\Models\EnterpriseService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class EnterpriseServiceService {
     public function register(array $data, int $enterpriseId): JsonResponse {
@@ -43,5 +43,28 @@ class EnterpriseServiceService {
 
     protected function numbersOnly(string $phone): string {
         return preg_replace('/\D/', '', $phone);
+    }
+
+    public function deleteService(int $enterpriseId, int $id): JsonResponse {
+        $service = EnterpriseService::where('id', $id)
+                    ->where('enterprise_id', $enterpriseId)
+                    ->first();
+        
+        if (!$service) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Item não encontrado.',
+            ], 401);
+        }
+
+        if ($service->image) {
+            Storage::disk('public')->delete($service->image);
+        }
+
+        $service->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Item removido com sucesso.',
+        ], 200);
     }
 }
