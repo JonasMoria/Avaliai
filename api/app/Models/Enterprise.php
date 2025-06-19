@@ -26,4 +26,9 @@ class Enterprise extends Model {
     public function revokeAllTokens(): void {
         $this->tokens()->delete();
     }
+
+    public function services() {
+        return $this->hasMany(\App\Models\EnterpriseService::class);
+    }
+
 }

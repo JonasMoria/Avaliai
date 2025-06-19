@@ -219,7 +219,9 @@ export default {
                 this.isRequesting = false;
 
                 if (response.status == 201) {
-                    const service = response.data.data;
+                    let service = response.data.data;
+                    service.image = `${api.defaults.baseRepository}/storage/${service.image}`;
+
                     this.$emit('putServiceInList', service);
                     this.resetFields();
 

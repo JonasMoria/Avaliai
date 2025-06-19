@@ -18,4 +18,9 @@ class EnterpriseServiceController extends Controller {
         $enterprise = Auth::user();
         return $this->service->register($request->validated(), $enterprise->id);
     }
+
+    public function listMyServices(): JsonResponse {
+        $enterprise = Auth::user();
+        return $this->service->getServicesByEnterprise($enterprise);
+    }
 }

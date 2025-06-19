@@ -36,5 +36,6 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::post('/logout', [EnterpriseController::class, 'logout']);
 
         Route::post('/services/register', [EnterpriseServiceController::class, 'register']);
+        Route::get('/services/list', [EnterpriseServiceController::class, 'listMyServices']);
     });
 });
