@@ -13,7 +13,7 @@ import NavBarComponent from '@/components/Home/NavBarComponent.vue';
 import BreadCrumbComponent from '@/components/painel/BreadCrumbComponent.vue';
 
 export default {
-    name: 'EnterpriseReviewsView',
+    name: 'UserReviewsView',
     components: {
         NavBarComponent,
         BreadCrumbComponent
@@ -23,7 +23,7 @@ export default {
         loadBreadCrumb: function () {
             return [{
                 name: 'Avaliações',
-                path: '/empresa/avaliacoes'
+                path: '/usuario/avaliacoes'
             }];
         }
     }

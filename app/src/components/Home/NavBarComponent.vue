@@ -31,7 +31,8 @@
                     <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Home</router-link>
 
                     <div v-if="sessionData.type == 1">
-                        <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                        <router-link :to="systemRoutes.user.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                        <router-link :to="systemRoutes.user.reviews" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
                     </div>
                     <div v-if="sessionData.type == 2">
                         <router-link :to="systemRoutes.enterprise.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
@@ -67,7 +68,8 @@
             <hr class="mt-5">
             <div class="w-full mt-3 text-center">
                 <div v-if="sessionData.type == 1">
-                    <router-link :to="sessionData.redirectHomeTo" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                    <router-link :to="systemRoutes.user.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
+                    <router-link :to="systemRoutes.user.reviews" class="block px-4 py-2 text-sm hover:bg-gray-100">Avaliações</router-link>
                 </div>
                 <div v-if="sessionData.type == 2">
                     <router-link :to="systemRoutes.enterprise.account" class="block px-4 py-2 text-sm hover:bg-gray-100">Minha Conta</router-link>
@@ -105,6 +107,10 @@ export default {
                     account: '/empresa/conta',
                     services: '/empresa/servicos',
                     reviews: '/empresa/avaliacoes'
+                },
+                user: {
+                    account: '/usuario/conta',
+                    reviews: '/usuario/avaliacoes'
                 }
             }
         }

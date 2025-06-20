@@ -9,6 +9,8 @@ import { isUserAuthenticated, isEnterpriseAuthenticated } from '@/assets/scripts
 import ServicesView from '@/views/enterprise/ServicesView.vue'
 import AccountView from '@/views/enterprise/AccountView.vue'
 import ReviewsView from '@/views/enterprise/ReviewsView.vue'
+import UserAccountView from '@/views/user/AccountView.vue'
+import UserReviewsView from '@/views/user/ReviewsView.vue'
 
 const routes = [
   {
@@ -36,6 +38,26 @@ const routes = [
     component: HomeUserView,
     meta: {
       title: 'Avalia Ai! - Meu Perfil',
+      requiresAuth: true,
+      authRole: 'user',
+    }
+  },
+  {
+    path: '/usuario/conta',
+    name: 'Usuario Conta',
+    component: UserAccountView,
+    meta: {
+      title: 'Avalia Ai! - Minha Conta',
+      requiresAuth: true,
+      authRole: 'user',
+    }
+  },
+  {
+    path: '/usuario/avaliacoes',
+    name: 'Usuario Avaliacoes',
+    component: UserReviewsView,
+    meta: {
+      title: 'Avalia Ai! - Minhas Avaliações',
       requiresAuth: true,
       authRole: 'user',
     }
