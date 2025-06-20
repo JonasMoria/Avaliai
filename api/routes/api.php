@@ -37,6 +37,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
 
         Route::post('/services/register', [EnterpriseServiceController::class, 'register']);
         Route::get('/services/list', [EnterpriseServiceController::class, 'listMyServices']);
+        Route::post('/services/update/{id}', [EnterpriseServiceController::class, 'update']);
         Route::delete('/services/delete/{id}', [EnterpriseServiceController::class, 'remove']);
     });
 });

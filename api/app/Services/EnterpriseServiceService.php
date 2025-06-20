@@ -45,6 +45,40 @@ class EnterpriseServiceService {
         return preg_replace('/\D/', '', $phone);
     }
 
+    public function updateService(int $enterpriseId, int $serviceId, array $data, $imageFile = null): JsonResponse {
+        $service = EnterpriseService::where('id', $serviceId)
+                                    ->where('enterprise_id', $enterpriseId)
+                                    ->first();
+        
+        if (!$service) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Item não encontrado.',
+            ], 401);
+        }
+
+        if ($imageFile) {
+            if ($service->image) {
+                Storage::disk('public')->delete($service->image);
+            }
+
+            $imagePath = $imageFile->store('enterprise_services', 'public');
+            $data['image'] = $imagePath;
+        }
+
+        $service->update($data);
+
+        $service = EnterpriseService::where('id', $serviceId)
+                            ->where('enterprise_id', $enterpriseId)
+                            ->first();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Item atualizado com sucesso.',
+            'data' => $service
+        ], 200);
+    }
+
     public function deleteService(int $enterpriseId, int $id): JsonResponse {
         $service = EnterpriseService::where('id', $id)
                     ->where('enterprise_id', $enterpriseId)

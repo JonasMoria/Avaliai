@@ -2,7 +2,7 @@
 <div :class="modalSettings.show ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'" class="fixed inset-0 z-[999] grid w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 overflow-y-auto">
     <div class="relative m-4 p-4 w-2/5 min-w-[90%] max-w-[90%] md:min-w-[40%] md:max-w-[40%] rounded-lg bg-white shadow-sm">
         <div class="flex shrink-0 items-center pb-4 text-md font-medium text-slate-800">
-            Cadastrar Novo Serviço
+            {{ modalSettings.isEdit ? 'Editar' : 'Cadastrar Novo' }} Serviço
         </div>
         <div class="relative border-t border-slate-200 py-4 leading-normal text-slate-600 font-light">
             <AlertBoxComponent :alert="alert" />
@@ -112,8 +112,8 @@
             <button @click="hiddenModal()" class="rounded-md border border-transparent py-2 px-4 text-center text-sm transition-all text-slate-600 hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
                 Cancelar
             </button>
-            <button @click="putNewService()" class="rounded-md bg-green-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-green-700 focus:shadow-none active:bg-green-700 hover:bg-green-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2" type="button">
-                Cadastrar
+            <button @click="(modalSettings.isEdit ? editService() : putNewService())" class="rounded-md bg-green-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-green-700 focus:shadow-none active:bg-green-700 hover:bg-green-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2" type="button">
+                {{ modalSettings.isEdit ? 'Editar' : 'Cadastrar' }}
             </button>
         </div>
     </div>
@@ -145,20 +145,65 @@ export default {
                 message: ''
             },
             payload: {
-                name: '',
+                id: (this.modalSettings.isEdit ? this.modalSettings.objEdit.id : ''),
+                name: (this.modalSettings.isEdit ? this.modalSettings.objEdit.name : ''),
                 image: null,
-                type: '',
-                postalCode: '',
-                street: '',
-                number: '',
-                neighborhood: '',
-                city: '',
-                state: '',
-                phone: '',
-                email: '',
-                additional: '',
-                website: '',
+                type: (this.modalSettings.isEdit ? this.modalSettings.objEdit.type : ''),
+                postalCode: (this.modalSettings.isEdit ? this.modalSettings.objEdit.postalCode : ''),
+                street: (this.modalSettings.isEdit ? this.modalSettings.objEdit.street : ''),
+                number: (this.modalSettings.isEdit ? this.modalSettings.objEdit.number : ''),
+                neighborhood: (this.modalSettings.isEdit ? this.modalSettings.objEdit.neighborhood : ''),
+                city: (this.modalSettings.isEdit ? this.modalSettings.objEdit.city : ''),
+                state: (this.modalSettings.isEdit ? this.modalSettings.objEdit.state : ''),
+                phone: (this.modalSettings.isEdit ? this.modalSettings.objEdit.phone : ''),
+                email: (this.modalSettings.isEdit ? this.modalSettings.objEdit.email : ''),
+                additional: (this.modalSettings.isEdit ? this.modalSettings.objEdit.additional : ''),
+                website: (this.modalSettings.isEdit ? this.modalSettings.objEdit.website : ''),
             },
+        }
+    },
+
+    watch: {
+        modalSettings: {
+            immediate: true,
+            deep: true,
+            handler(newVal) {
+                if (newVal.isEdit && newVal.objEdit) {
+                    this.payload = {
+                        id: newVal.objEdit.id || '',
+                        name: newVal.objEdit.name || '',
+                        image: null,
+                        type: newVal.objEdit.type || '',
+                        postalCode: newVal.objEdit.postalCode || '',
+                        street: newVal.objEdit.street || '',
+                        number: newVal.objEdit.number || '',
+                        neighborhood: newVal.objEdit.neighborhood || '',
+                        city: newVal.objEdit.city || '',
+                        state: newVal.objEdit.state || '',
+                        phone: newVal.objEdit.phone || '',
+                        email: newVal.objEdit.email || '',
+                        additional: newVal.objEdit.additional || '',
+                        website: newVal.objEdit.website || '',
+                    };
+                } else {
+                    this.payload = {
+                        id: '',
+                        name: '',
+                        image: null,
+                        type: '',
+                        postalCode: '',
+                        street: '',
+                        number: '',
+                        neighborhood: '',
+                        city: '',
+                        state: '',
+                        phone: '',
+                        email: '',
+                        additional: '',
+                        website: '',
+                    };
+                }
+            }
         }
     },
 
@@ -193,6 +238,61 @@ export default {
                     this.searchingPlaceHolder = '';
                 });
 
+        },
+
+        editService: function () {
+            if (this.isRequesting) {
+                return;
+            }
+
+            const token = Utils.getEnterpriseSessionToken();
+            this.isRequesting = true;
+
+            const formData = new FormData();
+            for (const key in this.payload) {
+                if (this.payload[key] !== null && this.payload[key] !== '') {
+                    formData.append(key, this.payload[key]);
+                }
+            }
+
+            api.post(`/enterprise/services/update/${this.payload.id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+
+                if (response.status == 200) {
+                    let service = response.data.data;
+
+                    service.image = `${api.defaults.baseRepository}/storage/${service.image}`;
+
+                    this.$emit('updateServiceInList', service);
+
+                    this.alert.show = true;
+                    this.alert.success = true;
+                    this.alert.message = response.data.message;
+                    return;
+                }
+
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = 'Não foi possível cadastrar seu serviço. Por favor, aguarde ou contate nosso suporte!';
+
+            }).catch((error) => {
+                console.log(error);
+
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.success = false;
+
+                if (error.response && [400, 401, 422].includes(error.status)) {
+                    this.alert.message = error.response.data.message;
+                } else {
+                    this.alert.message = 'Serviço indisponível no momento. Por favor, aguarde ou contate nosso suporte!';
+                }
+            })
         },
 
         putNewService: function () {
@@ -249,7 +349,9 @@ export default {
         },
 
         resetFields: function () {
+            this.modalSettings.objEdit = {}
             this.payload = {
+                id: 0,
                 name: '',
                 image: null,
                 type: '',
@@ -268,6 +370,7 @@ export default {
         hiddenModal: function () {
             this.resetFields();
             this.modalSettings.show = false;
+            this.modalSettings.isEdit = false;
         },
 
         handleImageUpload: function (event) {

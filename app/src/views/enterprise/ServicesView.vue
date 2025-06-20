@@ -25,7 +25,7 @@
                         <small class="text-gray-600">{{service.neighborhood}} - {{service.city }}</small>
                     </div>
                     <div class="p-2">
-                        <button class="mr-2 bg-yellow-400 p-2 rounded-md pl-3 pr-3 text-white font-semibold text-xs">Editar</button>
+                        <button @click="editService(index)" class="mr-2 bg-yellow-400 p-2 rounded-md pl-3 pr-3 text-white font-semibold text-xs">Editar</button>
                         <button @click="removeService(index)" class="mr-2 bg-red-400 p-2 rounded-md pl-3 pr-3 text-white font-semibold text-xs">remover</button>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
         </section>
 
     </section>
-    <NewServiceModal :modal-settings="modalNewService" @putServiceInList="putService" />
+    <NewServiceModal :modal-settings="modalNewService" @putServiceInList="putService" @updateServiceInList="updateServiceList" />
     <ConfirmDeleteModal :modal-confirm-settings="modalConfirmSettings" :confirmDelete="removeService" />
 </section>
 </template>
@@ -65,7 +65,9 @@ export default {
             isRequesting: false,
 
             modalNewService: {
-                show: false
+                show: false,
+                isEdit: false,
+                objEdit: {},
             },
             modalConfirmSettings: {
                 show: false,
@@ -113,6 +115,21 @@ export default {
             }).catch((error) => {
 
             });
+        },
+
+        editService: function (index) {
+            const item = this.servicesList[index];
+
+            this.modalNewService.isEdit = true;
+            this.modalNewService.objEdit = item;
+            this.modalNewService.show = true;
+        },
+
+        updateServiceList: function (object) {
+            const index = this.servicesList.findIndex(item => item.id === object.id);
+            if (index !== -1) {
+                this.servicesList[index] = object;
+            }
         },
 
         removeService: function (index, isConfirmed = false) {
