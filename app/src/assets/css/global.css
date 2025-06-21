@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.icon-light-gray {
+  filter: brightness(0) saturate(0) opacity(0.6);
+}
+

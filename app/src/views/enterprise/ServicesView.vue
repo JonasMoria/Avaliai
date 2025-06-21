@@ -113,7 +113,9 @@ export default {
                 const services = response.data.data;
                 this.servicesList = this.servicesList.concat(services);
             }).catch((error) => {
-
+                if (error.status == 401) {
+                    return Utils.destroySessionWithLoginRequired();
+                }
             });
         },
 

@@ -137,6 +137,14 @@ const Utils = {
         return router.push({
             path: '/login'
         });
+    },
+    destroySessionWithLoginRequired: () => {
+        localBase.remove(localBase.keys.login.user);
+        localBase.remove(localBase.keys.login.enteprise);
+
+        return router.push({
+            path: '/login?expired=true'
+        });
     }
 }
 

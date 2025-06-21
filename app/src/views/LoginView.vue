@@ -10,6 +10,8 @@
                 <h6 class="text-sm font-medium mt-1">Para começar, selecione o seu tipo de perfil: </h6>
             </div>
 
+            <AlertBoxComponent :alert="alert" />
+
             <div class="md:flex flex-row justify-center mt-5">
                 <!-- User Account -->
                 <div @click="setFormType(1)" class="hover:bg-green-50 pb-5 flex flex-col items-center border-2 m-3 rounded-md p-3 w-80 cursor-pointer" :class="(formType == 1 ? 'bg-green-50' : '')">
@@ -203,8 +205,11 @@ export default {
                         this.alert.success = false;
                         this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
                         break;
-
                     default:
+                        this.setFormType(0);
+                        this.alert.show = true;
+                        this.alert.success = false;
+                        this.alert.message = 'Sessão Expirada. Por favor, faça login novamente.';
                         break;
                 }
             }

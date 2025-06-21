@@ -13,6 +13,7 @@ class Enterprise extends Model {
     protected $fillable = [
         'name',
         'tradename',
+        'profile_photo',
         'cnpj',
         'email',
         'password',
