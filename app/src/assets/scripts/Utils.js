@@ -61,6 +61,14 @@ const Utils = {
         return value
     },
 
+    filterWord: (word) => {
+        return word
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/\s+/g, '')
+            .replace(/[^a-zA-Z0-9]/g, '');
+    },
+
     keepNumbersOnly: function (value) {
         return value.replace(/\D/g, '');
     },

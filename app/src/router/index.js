@@ -11,6 +11,8 @@ import AccountView from '@/views/enterprise/AccountView.vue'
 import ReviewsView from '@/views/enterprise/ReviewsView.vue'
 import UserAccountView from '@/views/user/AccountView.vue'
 import UserReviewsView from '@/views/user/ReviewsView.vue'
+import EnterprisePage from '@/views/EnterprisePage.vue'
+import ServicePage from '@/views/ServicePage.vue'
 
 const routes = [
   {
@@ -18,6 +20,18 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { title: 'Avalia Ai! - Avalie tudo o que quiser!' }
+  },
+  {
+    path: '/empresa/:name/:id',
+    name: 'EnterprisePage',
+    component: EnterprisePage,
+    meta: { title: 'Avalia Ai! - Empresas!' }
+  },
+  {
+    path: '/empresa/item/:name/:id',
+    name: 'EnterpriseServicePage',
+    component: ServicePage,
+    meta: { title: 'Avalia Ai! - Serviços da Empresa' }
   },
   {
     path: '/cadastro',

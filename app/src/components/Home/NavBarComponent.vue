@@ -5,16 +5,22 @@
             <img src="@/assets/images/sitelogo.png" alt="avaliai_logo" class="h-6 md:h-8 ml-0 md:ml-10">
         </router-link>
 
-        <div class="flex items-center mx-auto w-7/12 md:w-5/12">
-            <div class="relative w-full">
-                <input type="text" id="simple-search" class="bg-gray-50 border border-green-600 text-gray-900 text-xs md:text-sm rounded-lg focus:ring-green-500 focus:border-green-500 w-full p-2" placeholder="O que você procura?" />
+        <div ref="container" class="relative mx-auto w-7/12 md:w-5/12">
+            <div class="flex items-center">
+                <input type="text" v-model="query" @input="debouncedSearch" @keydown.down="moveSelection(1)" @keydown.up="moveSelection(-1)" @keydown.enter="selectActive" class="bg-gray-50 border border-green-600 text-gray-900 text-xs md:text-sm rounded-lg focus:ring-green-500 focus:border-green-500 w-full p-2" placeholder="O que você procura?" />
+                <button type="button" class="p-2 md:p-2.5 ms-1 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="none">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+                    </svg>
+                </button>
             </div>
-            <button type="submit" class="p-2 md:p-2.5 ms-1 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300">
-                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-                </svg>
-                <span class="sr-only">Search</span>
-            </button>
+
+            <ul v-if="results.length && showSuggestions" class="absolute z-10 w-full md:w-11/12 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-auto">
+                <li v-for="(item, index) in results" :key="item.id" :class="['flex items-center p-2 cursor-pointer hover:bg-gray-100', index === activeIndex ? 'bg-gray-100' : '']" @click="navigateTo(item)" @mouseover="activeIndex = index">
+                    <img :src="item.imagePath" alt="" class="w-10 h-10 object-cover rounded mr-3" />
+                    <span class="text-sm text-gray-700">{{ item.name }}</span>
+                </li>
+            </ul>
         </div>
 
         <div class="flex-row hidden md:block pt-2">
@@ -86,6 +92,8 @@
 <script>
 import localBase from '@/assets/scripts/LocalBase';
 import Utils from '@/assets/scripts/Utils';
+import router from '@/router';
+import api from '@/services/api';
 
 export default {
     name: 'NavBarComponent',
@@ -96,6 +104,12 @@ export default {
             isLogged: false,
             isDropdownOpen: false,
             dropdownRef: null,
+
+            query: '',
+            results: [],
+            activeIndex: -1,
+            showSuggestions: false,
+
             sessionData: {
                 name: '',
                 type: 0,
@@ -131,15 +145,84 @@ export default {
             }
         },
 
+        debouncedSearch() {
+            clearTimeout(this.debounceTimeout)
+            this.debounceTimeout = setTimeout(() => {
+                this.onSearch()
+            }, 300)
+        },
+
+        onSearch() {
+            if (this.query.length < 3) {
+                this.results = []
+                this.showSuggestions = false
+                return
+            }
+
+            try {
+                api.get(`/search?term=${encodeURIComponent(this.query)}`, {})
+                    .then((response) => {
+                        this.results = response.data.data;
+                        this.showSuggestions = true
+                        this.activeIndex = -1
+                    }).catch((error) => {
+                        this.results = []
+                        this.showSuggestions = false
+                    });
+            } catch (error) {
+                this.results = []
+                this.showSuggestions = false
+            }
+        },
+
+        navigateTo(item) {
+            if (item.type === 1) {
+                router.push({
+                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
+                });
+            } else if (item.type === 2) {
+                router.push({
+                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
+                });
+            }
+            this.reset()
+        },
+
+        moveSelection(direction) {
+            if (!this.results.length) return
+            const total = this.results.length
+            this.activeIndex = (this.activeIndex + direction + total) % total
+        },
+
+        selectActive() {
+            if (this.activeIndex >= 0 && this.results[this.activeIndex]) {
+                this.navigateTo(this.results[this.activeIndex])
+            }
+        },
+
+        reset() {
+            this.query = ''
+            this.results = []
+            this.activeIndex = -1
+            this.showSuggestions = false
+        },
+
         logout: function () {
             Utils.logoutApi();
             Utils.destroySession();
         },
+        handleClickOutside(event) {
+            if (!this.$refs.container.contains(event.target)) {
+                this.reset()
+            }
+        },
     },
 
     mounted() {
-        this.dropdownRef = this.$refs.dropdownRef;
-        document.addEventListener('click', this.closeDropdown);
+        document.addEventListener('click', this.handleClickOutside)
+    },
+    beforeUnmount() {
+        document.removeEventListener('click', this.handleClickOutside)
     },
 
     created() {
