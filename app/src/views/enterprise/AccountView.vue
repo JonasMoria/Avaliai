@@ -41,7 +41,7 @@
                     </div>
                     <div class="m-2">
                         <label for="enterprise_cnpj" class="block mb-2 text-xs font-medium text-gray-500">CNPJ</label>
-                        <input v-model="payload.infos.cnpj" type="text" id="enterprise_cnpj" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
+                        <input @input="maskCnpj()" v-model="payload.infos.cnpj" type="text" id="enterprise_cnpj" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
                     </div>
                 </div>
                 <div class="mt-auto">
@@ -62,7 +62,6 @@
                             <button @click="updateEmail()" class="bg-green-500 p-2 px-4 text-xs rounded-md text-white font-semibold w-full">Atualizar</button>
                         </div>
                     </div>
-                    <!-- Campo de Senha -->
                     <div class="m-2 relative">
                         <label for="password" class="block mb-3 text-xs font-medium text-gray-500">Senha</label>
                         <input :type="showPassword ? 'text' : 'password'" v-model="payload.security.password" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2 pr-10" />
@@ -160,6 +159,9 @@ export default {
                 message: ''
             };
         },
+        maskCnpj: function() {
+            this.payload.infos.cnpj = Utils.maskCnpj(this.payload.infos.cnpj);
+        },
 
         updateImage: function () {
             this.resetAlert();
@@ -194,13 +196,33 @@ export default {
                 this.isRequesting = false;
                 this.alert.show = true;
                 this.alert.success = false;
-                this.alert.message = error.response.data.message;
+                this.alert.message = error.response.data.message || 'Não foi possível realizar esta ação. Por favor, tente novamente mais tarde.';
                 return;
             });
         },
 
         updateMyEnterprise: function () {
             this.resetAlert();
+
+            this.isRequesting = true;
+            api.post('enterprise/account/update/informations', this.payload.infos, {
+                headers: {
+                    Authorization: `Bearer ${Utils.getEnterpriseSessionToken()}`
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+
+                this.alert.show = true;
+                this.alert.success = true;
+                this.alert.message = response.data.message;
+                return;
+            }).catch((error) => {
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = error.response.data.message || 'Não foi possível realizar esta ação. Por favor, tente novamente mais tarde.';
+                return;
+            });
         },
 
         updateEmail: function () {
@@ -228,7 +250,7 @@ export default {
 
             this.payload.infos.name = data.name;
             this.payload.infos.tradename = data.tradename;
-            this.payload.infos.cnpj = data.cnpj;
+            this.payload.infos.cnpj = Utils.maskCnpj(data.cnpj);
 
             this.payload.security.email = data.email;
 

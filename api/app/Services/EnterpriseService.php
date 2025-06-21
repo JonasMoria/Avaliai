@@ -97,4 +97,24 @@ class EnterpriseService {
             'message' => 'Não foi possível atualizar a foto. Por favor, tente novamente mais tarde.',
         ], 200);
     }
+
+    public function updateInformations(int $enterpriseId, array $data): JsonResponse {
+        $enterprise = Enterprise::where('id', $enterpriseId)
+                        ->first();
+
+        if (!$enterprise) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de sua empresa não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $data['cnpj'] = $this->sanitizeCnpj($data['cnpj']);
+        $enterprise->update($data);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Dados cadastrais atualizados com sucesso.',
+        ], 200);
+    }
 }
