@@ -63,13 +63,21 @@
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
                         <input v-model="payload.user.email" type="text" id="email" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                     </div>
-                    <div class="mb-5 m-2">
+                    <div class="mb-5 m-2 relative">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
-                        <input v-model="payload.user.password" type="password" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.user.password" :type="showPassword ? 'text' : 'password'" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <span @click="showPassword = !showPassword" class="absolute right-3 top-[40px] cursor-pointer text-gray-400">
+                            <img v-if="!showPassword" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                            <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                        </span>
                     </div>
-                    <div class="mb-5 m-2">
+                    <div class="mb-5 m-2 relative">
                         <label for="repeat-pass" class="block mb-2 text-sm font-medium text-gray-900">Repita sua senha</label>
-                        <input v-model="payload.user.password_confirmation" type="password" id="repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.user.password_confirmation" :type="showPasswordRepeat ? 'text' : 'password'" id="repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <span @click="showPasswordRepeat = !showPasswordRepeat" class="absolute right-3 top-[40px] cursor-pointer text-gray-400">
+                            <img v-if="!showPasswordRepeat" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                            <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                        </span>
                     </div>
 
                     <div class="mb-5 m-2">
@@ -120,13 +128,21 @@
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
                         <input v-model="payload.enterprise.email" type="text" id="enterprise_email" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                     </div>
-                    <div class="mb-5 m-2">
+                    <div class="mb-5 m-2 relative">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
-                        <input v-model="payload.enterprise.password" type="password" id="enterprise_password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.enterprise.password" :type="showPassword ? 'text' : 'password'" id="enterprise_password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <span @click="showPassword = !showPassword" class="absolute right-3 top-[40px] cursor-pointer text-gray-400">
+                            <img v-if="!showPassword" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                            <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                        </span>
                     </div>
-                    <div class="mb-5 m-2">
+                    <div class="mb-5 m-2 relative">
                         <label for="repeat-pass" class="block mb-2 text-sm font-medium text-gray-900">Repita sua senha</label>
-                        <input v-model="payload.enterprise.password_confirmation" type="password" id="enterprise_repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="payload.enterprise.password_confirmation" :type="showPasswordRepeat ? 'text' : 'password'" id="enterprise_repeat-pass" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <span @click="showPasswordRepeat = !showPasswordRepeat" class="absolute right-3 top-[40px] cursor-pointer text-gray-400">
+                            <img v-if="!showPasswordRepeat" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                            <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                        </span>
                     </div>
                     <div class="mb-5 m-2">
                         <div class="flex items-start mb-5">
@@ -173,6 +189,8 @@ export default {
         return {
             formType: 0,
             isRequesting: false,
+            showPassword: false,
+            showPasswordRepeat: false,
 
             alert: {
                 show: false,
@@ -207,6 +225,7 @@ export default {
         setFormType: function (type) {
             this.formType = type;
             this.payload.accountType = type;
+            this.showPassword = this.showPasswordRepeat = false;
             this.resetAlert();
         },
         backForm: function () {

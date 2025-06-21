@@ -50,9 +50,13 @@
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
                         <input v-model="email" type="text" id="email" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
                     </div>
-                    <div class="mb-5 m-2">
+                    <div class="mb-5 m-2 relative">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Senha</label>
-                        <input v-model="password" type="password" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <input v-model="password" :type="(showPassword? 'text' : 'password')" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2" required />
+                        <span @click="showPassword = !showPassword" class="absolute right-3 top-[40px] cursor-pointer text-gray-400">
+                            <img v-if="!showPassword" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                            <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
+                        </span>
                     </div>
                     <div class="mb-5 m-2">
                         <div class="w-full text-center mt-2">
@@ -96,6 +100,7 @@ export default {
         return {
             formType: 0,
             isRequesting: false,
+            showPassword: false,
 
             alert: {
                 show: false,
