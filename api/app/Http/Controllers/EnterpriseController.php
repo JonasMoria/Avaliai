@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterEnterpriseRequest;
+use App\Http\Requests\UpdateEmailRequest;
 use App\Http\Requests\UpdateEnterpriseInformationsRequest;
 use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\EnterpriseService;
@@ -55,5 +56,10 @@ class EnterpriseController extends Controller {
     public function updateInformations(UpdateEnterpriseInformationsRequest $request): JsonResponse {
         $enterprise = Auth::user();
         return $this->enterpriseService->updateInformations($enterprise->id, $request->validated());
+    }
+
+    public function updateEmail(UpdateEmailRequest $request) : JsonResponse {
+        $enterprise = Auth::user();
+        return $this->enterpriseService->updateEmail($enterprise->id, $request->validated());
     }
 }

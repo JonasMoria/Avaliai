@@ -159,7 +159,7 @@ export default {
                 message: ''
             };
         },
-        maskCnpj: function() {
+        maskCnpj: function () {
             this.payload.infos.cnpj = Utils.maskCnpj(this.payload.infos.cnpj);
         },
 
@@ -227,6 +227,29 @@ export default {
 
         updateEmail: function () {
             this.resetAlert();
+
+            this.isRequesting = true;
+            api.post('enterprise/account/update/email', {
+                email: this.payload.security.email
+            }, {
+                headers: {
+                    Authorization: `Bearer ${Utils.getEnterpriseSessionToken()}`
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+
+                this.alert.show = true;
+                this.alert.success = true;
+                this.alert.message = response.data.message;
+                return;
+            }).catch((error) => {
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = error.response.data.message || 'Não foi possível realizar esta ação. Por favor, tente novamente mais tarde.';
+                return;
+            });
+
         },
 
         updatePassword: function () {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\EmailAltered;
 use App\Mail\WelcomeEnterpriseMail;
 use App\Models\Enterprise;
 use Illuminate\Http\JsonResponse;
@@ -115,6 +116,26 @@ class EnterpriseService {
         return response()->json([
             'status' => 200,
             'message' => 'Dados cadastrais atualizados com sucesso.',
+        ], 200);
+    }
+
+    public function updateEmail(int $enterpriseId, array $data) : JsonResponse {
+        $enterprise = Enterprise::where('id', $enterpriseId)
+                ->first();
+
+        if (!$enterprise) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de sua empresa não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $enterprise->update($data);
+        Mail::to($enterprise->email)->send(new EmailAltered($enterprise->name, $enterprise->email));
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'E-mail alterado com sucesso.',
         ], 200);
     }
 }
