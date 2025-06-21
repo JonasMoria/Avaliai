@@ -2,13 +2,17 @@
 
 use App\Http\Controllers\EnterpriseController;
 use App\Http\Controllers\EnterpriseServiceController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Testing route
 Route::get('/ping', function () {
     return response()->json(['pong' => true]);
 });
 
+// Searching Routes
+Route::get('/search', [SearchController::class, 'search']);
 
 // Public User Routes
 Route::prefix('/user')->group(function() {
