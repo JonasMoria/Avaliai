@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterEnterpriseRequest;
 use App\Http\Requests\UpdateEmailRequest;
 use App\Http\Requests\UpdateEnterpriseInformationsRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\EnterpriseService;
 use Illuminate\Http\JsonResponse;
@@ -61,5 +62,10 @@ class EnterpriseController extends Controller {
     public function updateEmail(UpdateEmailRequest $request) : JsonResponse {
         $enterprise = Auth::user();
         return $this->enterpriseService->updateEmail($enterprise->id, $request->validated());
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request) : JsonResponse {
+        $enterprise = Auth::user();
+        return $this->enterpriseService->updatePassword($enterprise->id, $request->validated());
     }
 }

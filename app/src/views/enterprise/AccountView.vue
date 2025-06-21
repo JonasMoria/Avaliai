@@ -32,15 +32,15 @@
                 </div>
                 <div class="mt-auto">
                     <div class="m-2">
-                        <label for="enterprise_name" class="block mb-2 text-xs font-medium text-gray-500">Razão Social</label>
+                        <label for="enterprise_name" class="text-xs font-medium text-gray-500">Razão Social</label>
                         <input v-model="payload.infos.name" type="text" id="enterprise_name" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
                     </div>
                     <div class="m-2">
-                        <label for="tradename" class="block mb-2 text-xs font-medium text-gray-500">Nome Fantasia</label>
+                        <label for="tradename" class="text-xs font-medium text-gray-500">Nome Fantasia</label>
                         <input v-model="payload.infos.tradename" type="text" id="tradename" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
                     </div>
                     <div class="m-2">
-                        <label for="enterprise_cnpj" class="block mb-2 text-xs font-medium text-gray-500">CNPJ</label>
+                        <label for="enterprise_cnpj" class="text-xs font-medium text-gray-500">CNPJ</label>
                         <input @input="maskCnpj()" v-model="payload.infos.cnpj" type="text" id="enterprise_cnpj" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
                     </div>
                 </div>
@@ -56,24 +56,24 @@
                 </div>
                 <div class="mt-auto">
                     <div class="m-2">
-                        <label for="enterprise_email" class="block mb-2 text-xs font-medium text-gray-500">E-mail</label>
+                        <label for="enterprise_email" class="text-xs font-medium text-gray-500">E-mail</label>
                         <input v-model="payload.security.email" type="text" id="enterprise_email" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2" />
                         <div class="mt-2">
                             <button @click="updateEmail()" class="bg-green-500 p-2 px-4 text-xs rounded-md text-white font-semibold w-full">Atualizar</button>
                         </div>
                     </div>
                     <div class="m-2 relative">
-                        <label for="password" class="block mb-3 text-xs font-medium text-gray-500">Senha</label>
+                        <label for="password" class="block text-xs font-medium text-gray-500">Senha</label>
                         <input :type="showPassword ? 'text' : 'password'" v-model="payload.security.password" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2 pr-10" />
-                        <span @click="showPassword = !showPassword" class="absolute right-3 top-[38px] cursor-pointer text-gray-400">
+                        <span @click="showPassword = !showPassword" class="absolute right-3 top-6 cursor-pointer text-gray-400">
                             <img v-if="!showPassword" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
                             <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
                         </span>
                     </div>
                     <div class="m-2 relative">
-                        <label for="passwordRepeat" class="block mb-3 text-xs font-medium text-gray-500">Senha</label>
+                        <label for="passwordRepeat" class="block text-xs font-medium text-gray-500">Confirme sua senha</label>
                         <input :type="showPasswordRepeat ? 'text' : 'password'" v-model="payload.security.password_confirmation" id="passwordRepeat" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2 pr-10" />
-                        <span @click="showPasswordRepeat = !showPasswordRepeat" class="absolute right-3 top-[38px] cursor-pointer text-gray-400">
+                        <span @click="showPasswordRepeat = !showPasswordRepeat" class="absolute right-3 top-6 cursor-pointer text-gray-400">
                             <img v-if="!showPasswordRepeat" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
                             <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
                         </span>
@@ -254,6 +254,29 @@ export default {
 
         updatePassword: function () {
             this.resetAlert();
+
+            this.isRequesting = true;
+            api.post('enterprise/account/update/password', {
+                password: this.payload.security.password,
+                password_confirmation: this.payload.security.password_confirmation,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${Utils.getEnterpriseSessionToken()}`
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+
+                this.alert.show = true;
+                this.alert.success = true;
+                this.alert.message = response.data.message;
+                return;
+            }).catch((error) => {
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = error.response.data.message || 'Não foi possível realizar esta ação. Por favor, tente novamente mais tarde.';
+                return;
+            });
         },
     },
 

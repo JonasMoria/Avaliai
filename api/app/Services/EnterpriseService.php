@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\EmailAltered;
+use App\Mail\PasswordAltered;
 use App\Mail\WelcomeEnterpriseMail;
 use App\Models\Enterprise;
 use Illuminate\Http\JsonResponse;
@@ -135,7 +136,29 @@ class EnterpriseService {
 
         return response()->json([
             'status' => 200,
-            'message' => 'E-mail alterado com sucesso.',
+            'message' => 'E-mail alterado com sucesso!',
+        ], 200);
+    }
+
+    public function updatePassword(int $enterpriseId, array $data) : JsonResponse {
+        $enterprise = Enterprise::where('id', $enterpriseId)
+            ->first();
+
+        if (!$enterprise) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de sua empresa não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $data['password'] = Hash::make($data['password']);
+        $enterprise->update($data);
+
+        Mail::to($enterprise->email)->send(new PasswordAltered($enterprise->name));
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Senha de acesso alterada com sucesso!',
         ], 200);
     }
 }
