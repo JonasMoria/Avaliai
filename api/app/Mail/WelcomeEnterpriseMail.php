@@ -26,7 +26,7 @@ class WelcomeEnterpriseMail extends Mailable
      */
     public function envelope(): Envelope {
         return new Envelope(
-            subject: 'Welcome Enterprise Mail',
+            subject: 'Bem vindo(a) ao Avalia Ai!',
         );
     }
 
