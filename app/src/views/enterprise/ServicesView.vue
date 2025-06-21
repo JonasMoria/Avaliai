@@ -16,7 +16,7 @@
 
         <section v-show="!isRequesting">
             <div class="flex flex-wrap w-full mt-5">
-                <div class="w-full md:max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm m-2 cursor-pointer" v-for="(service, index) in servicesList" :key="index">
+                <div class="w-full md:max-w-xs bg-white border border-gray-200 rounded-lg shadow-sm m-2 cursor-pointer" v-for="(service, index) in servicesList" :key="index">
                     <figure>
                         <img class="rounded-t-lg max-h-32 w-full" :src="(service.image)" :alt="service.name" />
                     </figure>

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Facades\SyncQueue;
 use App\Mail\EmailAltered;
 use App\Mail\PasswordAltered;
 use App\Mail\WelcomeEnterpriseMail;
@@ -23,6 +24,18 @@ class EnterpriseService {
         ]);
 
         Mail::to($enterprise->email)->send(new WelcomeEnterpriseMail($enterprise));
+
+        SyncQueue::add(
+            modelType: self::class,
+            modelId: $enterprise->id,
+            action: 'created',
+            payload: [
+                'id' => $enterprise->id,
+                'type' => 2, 
+                'name' => $enterprise->tradename,
+                'imagePath' => asset('storage/' . $enterprise->profile_photo),
+            ]
+        );
 
         return $enterprise;
     }
@@ -87,6 +100,18 @@ class EnterpriseService {
             $toUpload['profile_photo'] = $imageSrc;
             $enterprise->update($toUpload);
 
+            SyncQueue::add(
+                modelType: self::class,
+                modelId: $enterprise->id,
+                action: 'updated',
+                payload: [
+                    'id' => $enterprise->id,
+                    'type' => 2, 
+                    'name' => $enterprise->name,
+                    'imagePath' => asset('storage/' . $imageSrc),
+                ]
+            );
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Foto atualizada com sucesso.',
@@ -113,6 +138,18 @@ class EnterpriseService {
 
         $data['cnpj'] = $this->sanitizeCnpj($data['cnpj']);
         $enterprise->update($data);
+
+        SyncQueue::add(
+            modelType: self::class,
+            modelId: $enterprise->id,
+            action: 'updated',
+            payload: [
+                'id' => $enterprise->id,
+                'type' => 2, 
+                'name' => $data['tradename'],
+                'imagePath' => asset('storage/' . $enterprise->profile_photo),
+            ]
+        );
 
         return response()->json([
             'status' => 200,

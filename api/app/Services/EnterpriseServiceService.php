@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Facades\SyncQueue;
 use App\Models\EnterpriseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,18 @@ class EnterpriseServiceService {
         $data['postalCode'] = $this->numbersOnly($data['postalCode']);
 
         $enterpriseService = EnterpriseService::create($data);
+
+        SyncQueue::add(
+            modelType: self::class,
+            modelId: $enterpriseService->id,
+            action: 'created',
+            payload: [
+                'id' => $enterpriseService->id,
+                'type' => 1, 
+                'name' => $enterpriseService->name,
+                'imagePath' => asset('storage/' . $enterpriseService->image),
+            ]
+        );
 
         return response()->json([
             'status' => 201,
@@ -71,6 +84,18 @@ class EnterpriseServiceService {
         $service = EnterpriseService::where('id', $serviceId)
                             ->where('enterprise_id', $enterpriseId)
                             ->first();
+        
+        SyncQueue::add(
+            modelType: self::class,
+            modelId: $service->id,
+            action: 'updated',
+            payload: [
+                'id' => $service->id,
+                'type' => 1, 
+                'name' => $service->name,
+                'imagePath' => asset('storage/' . $service->image),
+            ]
+        );
 
         return response()->json([
             'status' => 200,
@@ -96,6 +121,19 @@ class EnterpriseServiceService {
         }
 
         $service->delete();
+
+        SyncQueue::add(
+            modelType: self::class,
+            modelId: $service->id,
+            action: 'deleted',
+            payload: [
+                'id' => $service->id,
+                'type' => 1, 
+                'name' => $service->name,
+                'imagePath' => asset('storage/' . $service->image),
+            ]
+        );
+
         return response()->json([
             'status' => 200,
             'message' => 'Item removido com sucesso.',
