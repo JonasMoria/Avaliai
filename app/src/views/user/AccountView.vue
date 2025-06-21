@@ -45,7 +45,7 @@
                     </div>
                 </div>
                 <div class="mt-auto">
-                    <button @click="updateMyEnterprise()" class="bg-green-500 p-2 px-4 text-xs rounded-md text-white font-semibold w-full">Atualizar</button>
+                    <button @click="updateMyInformations()" class="bg-green-500 p-2 px-4 text-xs rounded-md text-white font-semibold w-full">Atualizar</button>
                 </div>
             </section>
 
@@ -201,7 +201,7 @@ export default {
             });
         },
 
-        updateMyEnterprise: function () {
+        updateMyInformations: function () {
             this.resetAlert();
 
             this.isRequesting = true;

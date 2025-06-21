@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -43,5 +44,10 @@ class UserController extends Controller {
 
     public function logout(Request $request) {
         return $this->userService->logout($request->user());
+    }
+
+    public function updateProfilePhoto(UploadProfilePhotoRequest $request) : JsonResponse {
+        $user = Auth::user();
+        return $this->userService->updateProfilePhoto($user->id, $request->validated(), $request->file('image'));
     }
 }

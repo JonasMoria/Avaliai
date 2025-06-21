@@ -28,6 +28,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
     Route::prefix('/user')->group(function() {
         Route::get('/me', [UserController::class, 'me']);
         Route::post('/logout', [UserController::class, 'logout']);
+
+        Route::post('/account/update/photo', [UserController::class, 'updateProfilePhoto']);
+        Route::post('/account/update/informations', [UserController::class, 'updateInformations']);
+        Route::post('/account/update/email', [UserController::class, 'updateEmail']);
+        Route::post('/account/update/password', [UserController::class, 'updatePassword']);
     });
 
     // Enterprise
