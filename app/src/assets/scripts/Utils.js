@@ -130,6 +130,18 @@ const Utils = {
         return '';
     },
 
+    getUserSessionToken: function () {
+        const userSession = JSON.parse(
+            localBase.select(localBase.keys.login.user)
+        );
+
+        if (userSession.token !== undefined && userSession.token) {
+            return userSession.token;
+        }
+
+        return '';
+    },
+
     destroySession: () => {
         localBase.remove(localBase.keys.login.user);
         localBase.remove(localBase.keys.login.enteprise);

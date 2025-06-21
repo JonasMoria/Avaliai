@@ -32,7 +32,13 @@ class UserController extends Controller {
     }
 
     public function me(): JsonResponse {
-        return response()->json(Auth::user());
+        $user = Auth::user();
+
+        if($user->profile_photo) {
+            $user->profile_photo = asset('storage/' . $user->profile_photo);
+        }
+
+        return response()->json($user);
     }
 
     public function logout(Request $request) {
