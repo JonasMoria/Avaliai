@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Requests\UpdateEmailRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUserInformations;
 use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\UserService;
@@ -61,5 +62,10 @@ class UserController extends Controller {
     public function updateEmail(UpdateEmailRequest $request) : JsonResponse {
         $user = Auth::user();
         return $this->userService->updateEmail($user->id, $request->validated()); 
+    }
+
+    public function updatePassword(UpdatePasswordRequest $request) : JsonResponse {
+        $user = Auth::user();
+        return $this->userService->updatePassword($user->id, $request->validated()); 
     }
 }

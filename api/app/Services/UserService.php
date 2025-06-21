@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\EmailAltered;
+use App\Mail\PasswordAltered;
 use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -135,6 +136,28 @@ class UserService {
         return response()->json([
             'status' => 200,
             'message' => 'Dados cadastrais atualizados com sucesso.',
+        ], 200);
+    }
+
+    public function updatePassword(int $userId, array $data) : JsonResponse {
+        $user = User::where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de cadastro não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $data['password'] = Hash::make($data['password']);
+        $user->update($data);
+
+        Mail::to($user->email)->send(new PasswordAltered($user->name));
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Senha de acesso alterada com sucesso!',
         ], 200);
     }
 }
