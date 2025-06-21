@@ -96,4 +96,24 @@ class UserService {
             'message' => 'Não foi possível atualizar a foto. Por favor, tente novamente mais tarde.',
         ], 200);
     }
+
+    public function updateInformations(int $userId, array $data) : JsonResponse {
+        $user = User::where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de cadastro não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $data['cpf'] = $this->sanitizeCpf($data['cpf']);
+        $user->update($data);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Dados cadastrais atualizados com sucesso.',
+        ], 200);
+    }
 }

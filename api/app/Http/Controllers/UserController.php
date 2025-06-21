@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\UpdateUserInformations;
 use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -49,5 +50,10 @@ class UserController extends Controller {
     public function updateProfilePhoto(UploadProfilePhotoRequest $request) : JsonResponse {
         $user = Auth::user();
         return $this->userService->updateProfilePhoto($user->id, $request->validated(), $request->file('image'));
+    }
+
+    public function updateInformations(UpdateUserInformations $request): JsonResponse {
+        $user = Auth::user();
+        return $this->userService->updateInformations($user->id, $request->validated());
     }
 }
