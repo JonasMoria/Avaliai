@@ -21,6 +21,9 @@ COPY . .
 # Instala dependências do Laravel
 RUN if [ -f composer.json ]; then composer install --no-interaction; fi
 
+# Instala o Redis
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Permissões
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage

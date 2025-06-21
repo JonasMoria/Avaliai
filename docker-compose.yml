@@ -66,5 +66,13 @@ services:
       - "8025:8025"
       - "1025:1025"
 
+  redis:
+    image: redis/redis-stack:latest
+    container_name: avaliai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"   # Redis
+      - "8001:8001"   # RedisInsight Web UI
+
 volumes:
   mysql_data:
