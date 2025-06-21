@@ -9,6 +9,7 @@
             <LoaderComponent />
         </section>
 
+        <AlertBoxComponent :alert="alert" />
         <section class="md:flex md:grid-cols-2 md:gap-4" v-if="!isRequesting">
             <section class="w-full m-1 border border-gray-200 rounded-md p-5 flex flex-col">
                 <div class="flex flex-row mb-5">
@@ -71,8 +72,8 @@
                         </span>
                     </div>
                     <div class="m-2 relative">
-                        <label for="password" class="block mb-3 text-xs font-medium text-gray-500">Senha</label>
-                        <input :type="showPasswordRepeat ? 'text' : 'password'" v-model="payload.security.password_confirmation" id="password" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2 pr-10" />
+                        <label for="passwordRepeat" class="block mb-3 text-xs font-medium text-gray-500">Senha</label>
+                        <input :type="showPasswordRepeat ? 'text' : 'password'" v-model="payload.security.password_confirmation" id="passwordRepeat" class="shadow-xs bg-gray-50 border border-gray-300 text-gray-500 text-xs rounded-lg block w-full p-2 pr-10" />
                         <span @click="showPasswordRepeat = !showPasswordRepeat" class="absolute right-3 top-[38px] cursor-pointer text-gray-400">
                             <img v-if="!showPasswordRepeat" src="@/assets/icons/showSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
                             <img v-else src="@/assets/icons/hideSecret.svg" alt="show_password" class="h-4 w-4 icon-light-gray">
@@ -91,6 +92,7 @@
 
 <script>
 import Utils from '@/assets/scripts/Utils';
+import AlertBoxComponent from '@/components/Home/AlertBoxComponent.vue';
 import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import NavBarComponent from '@/components/Home/NavBarComponent.vue';
 import BreadCrumbComponent from '@/components/painel/BreadCrumbComponent.vue';
@@ -101,7 +103,8 @@ export default {
     components: {
         NavBarComponent,
         BreadCrumbComponent,
-        LoaderComponent
+        LoaderComponent,
+        AlertBoxComponent,
     },
 
     data() {
@@ -109,6 +112,11 @@ export default {
             isRequesting: false,
             showPassword: false,
             showPasswordRepeat: false,
+            alert: {
+                show: false,
+                success: false,
+                message: ''
+            },
 
             payload: {
                 id: 0,
@@ -145,21 +153,62 @@ export default {
                 this.payload.media.newImage = file;
             }
         },
-
-        updateImage: function() {
-
+        resetAlert: function () {
+            this.alert = {
+                show: false,
+                success: false,
+                message: ''
+            };
         },
 
-        updateMyEnterprise: function() {
+        updateImage: function () {
+            this.resetAlert();
 
+            if (!this.payload.media.newImage) {
+                this.alert.show = true;
+                this.alert.message = 'É necessário selecionar uma imagem!';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', this.payload.media.newImage);
+
+            this.isRequesting = true;
+            api.post('enterprise/account/update/photo', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${Utils.getEnterpriseSessionToken()}`
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+                const data = response.data;
+                const urlImage = data.urlImage;
+
+                this.payload.media.perfilImage = urlImage;
+
+                this.alert.show = true;
+                this.alert.success = true;
+                this.alert.message = 'Foto de perfil atualizada com sucesso!';
+                return;
+            }).catch((error) => {
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.success = false;
+                this.alert.message = error.response.data.message;
+                return;
+            });
         },
 
-        updateEmail: function() {
-
+        updateMyEnterprise: function () {
+            this.resetAlert();
         },
 
-        updatePassword: function() {
+        updateEmail: function () {
+            this.resetAlert();
+        },
 
+        updatePassword: function () {
+            this.resetAlert();
         },
     },
 

@@ -39,5 +39,10 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::get('/services/list', [EnterpriseServiceController::class, 'listMyServices']);
         Route::post('/services/update/{id}', [EnterpriseServiceController::class, 'update']);
         Route::delete('/services/delete/{id}', [EnterpriseServiceController::class, 'remove']);
+
+        Route::post('/account/update/photo', [EnterpriseController::class, 'updateProfilePhoto']);
+        Route::post('/account/update/informations', [EnterpriseController::class, 'updateInformations']);
+        Route::post('/account/update/email', [EnterpriseController::class, 'updateEmail']);
+        Route::post('/account/update/password', [EnterpriseController::class, 'updatePassword']);
     });
 });

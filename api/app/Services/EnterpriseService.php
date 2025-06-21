@@ -7,6 +7,7 @@ use App\Models\Enterprise;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class EnterpriseService {
     
@@ -38,6 +39,10 @@ class EnterpriseService {
             ], 401);
         }
 
+        if($enterprise->profile_photo) {
+            $enterprise->profile_photo = asset('storage/' . $enterprise->profile_photo);
+        }
+
         $token = $enterprise->createToken('auth-token');
         $token->accessToken->expires_at = now()->addHours(2);
         $token->accessToken->save();
@@ -57,6 +62,39 @@ class EnterpriseService {
         return response()->json([
             'status' => 200,
             'message' => 'Logout realizado com sucesso'
+        ], 200);
+    }
+
+    public function updateProfilePhoto(int $enterpriseId, array $data, $fileImage = null) : JsonResponse {
+        $enterprise = Enterprise::where('id', $enterpriseId)
+                                ->first();
+        
+        if (!$enterprise) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de sua empresa não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        if ($fileImage) {
+            if ($enterprise->profile_photo) {
+                Storage::disk('public')->delete($enterprise->profile_photo);
+            }
+
+            $imageSrc = $fileImage->store('enterprises', 'public');
+            $toUpload['profile_photo'] = $imageSrc;
+            $enterprise->update($toUpload);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Foto atualizada com sucesso.',
+                'urlImage' => asset('storage/' . $imageSrc),
+            ], 200);
+        }
+
+        return response()->json([
+            'status' => 401,
+            'message' => 'Não foi possível atualizar a foto. Por favor, tente novamente mais tarde.',
         ], 200);
     }
 }

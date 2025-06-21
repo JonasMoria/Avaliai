@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterEnterpriseRequest;
+use App\Http\Requests\UploadProfilePhotoRequest;
 use App\Services\EnterpriseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -32,10 +33,21 @@ class EnterpriseController extends Controller {
     }
 
     public function me(): JsonResponse {
-        return response()->json(Auth::user());
+        $enterprise = Auth::user();
+
+        if($enterprise->profile_photo) {
+            $enterprise->profile_photo = asset('storage/' . $enterprise->profile_photo);
+        }
+
+        return response()->json($enterprise);
     }
 
     public function logout (Request $request) {
         return $this->enterpriseService->logout($request->user());
+    }
+
+    public function updateProfilePhoto(UploadProfilePhotoRequest $request): JsonResponse {
+        $enterprise = Auth::user();
+        return $this->enterpriseService->updateProfilePhoto($enterprise->id, $request->validated(), $request->file('image'));
     }
 }

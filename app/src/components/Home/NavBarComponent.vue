@@ -166,12 +166,12 @@ export default {
 
             switch (sessionInfo.user.type) {
                 case 1:
-                    this.sessionData.perfilImageSrc = new URL('@/assets/icons/person.svg',
+                    this.sessionData.perfilImageSrc = sessionInfo.user.profile_photo || new URL('@/assets/icons/person.svg',
                         import.meta.url).href;
                     this.sessionData.redirectHomeTo = '/usuario/home';
                     break;
                 case 2:
-                    this.sessionData.perfilImageSrc = new URL('@/assets/icons/company.svg',
+                    this.sessionData.perfilImageSrc = sessionInfo.user.profile_photo || new URL('@/assets/icons/company.svg',
                         import.meta.url).href;
                     this.sessionData.redirectHomeTo = '/empresa/home';
                     break;
