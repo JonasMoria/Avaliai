@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Mail\EmailAltered;
 use App\Mail\WelcomeUserMail;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -110,6 +111,26 @@ class UserService {
 
         $data['cpf'] = $this->sanitizeCpf($data['cpf']);
         $user->update($data);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Dados cadastrais atualizados com sucesso.',
+        ], 200);
+    }
+
+    public function updateEmail(int $userId, array $data) : JsonResponse {
+        $user = User::where('id', $userId)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de cadastro não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $user->update($data);
+        Mail::to($user->email)->send(new EmailAltered($user->name, $user->email));
 
         return response()->json([
             'status' => 200,

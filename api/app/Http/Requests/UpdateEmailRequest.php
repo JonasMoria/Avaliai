@@ -10,13 +10,25 @@ use Illuminate\Validation\Rule;
 
 class UpdateEmailRequest extends FormRequest {
 
+    private string $table = '';
+
+    public function prepareForValidation(): void {
+        $uri = $this->route()->uri();
+
+        if (str_contains($uri, 'enterprise')) {
+            $this->table = 'enterprises';
+        } else {
+            $this->table = 'users';
+        }
+    }
+
     public function authorize(): bool {
         return true;
     }
 
     public function rules(): array {
         return [
-            'email' => ['required', 'string', 'max:255', Rule::unique('enterprises', 'email')->ignore(Auth::user()->id)]
+            'email' => ['required', 'string', 'max:255', Rule::unique($this->table, 'email')->ignore(Auth::user()->id)]
         ];
     }
 
