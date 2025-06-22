@@ -26,13 +26,25 @@ class SyncToRedis extends Command {
                 $redisKey = "avaliai:search:{$item->payload['type']}:{$item->model_id}";
                 $payload = json_encode($item->payload);
 
-                Redis::connection()
-                    ->client()
-                    ->rawCommand('JSON.SET', $redisKey, '$', $payload);
+                if ($item->action == 'deleted') {
+                    $keyExists = Redis::connection()->client()->rawCommand('EXISTS', $redisKey);
+                    if ($keyExists) {
+                        Redis::connection()
+                            ->client()
+                            ->rawCommand('DEL', $redisKey);
+                        
+                            $this->info("Registro Removido: {$redisKey}");
+                    }
+                } else {
+                    Redis::connection()
+                        ->client()
+                        ->rawCommand('JSON.SET', $redisKey, '$', $payload);
+                    
+                    $this->info("Registro Inserido/Atualizado: {$redisKey}");
+                }
 
                 $item->update(['synced' => true]);
 
-                $this->info("Enviado para Redis: {$redisKey}");
             } catch (\Exception $e) {
                 $this->error("Erro ao sincronizar ID {$item->id}: {$e->getMessage()}");
             }
