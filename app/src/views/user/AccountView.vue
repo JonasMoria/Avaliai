@@ -16,7 +16,7 @@
                     <img src="@/assets/icons/media.svg" alt="company_icon" class="h-6">
                     <h3 class="ml-2 text-md font-semibold text-green-600 mt-[0.2%]">Imagem de Perfil</h3>
                 </div>
-                <figure class="mt-auto flex justify-center items-cente mb-4">
+                <figure class="mt-auto flex justify-center items-center mb-4">
                     <img :src="payload.media.perfilImage" class="w-32 h-32 rounded-full ring-2 ring-gray-300" alt="Perfil Logo">
                 </figure>
                 <div class="mt-auto text-xs">

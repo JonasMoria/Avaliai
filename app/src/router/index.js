@@ -13,6 +13,7 @@ import UserAccountView from '@/views/user/AccountView.vue'
 import UserReviewsView from '@/views/user/ReviewsView.vue'
 import EnterprisePage from '@/views/EnterprisePage.vue'
 import ServicePage from '@/views/ServicePage.vue'
+import SearchView from '@/views/SearchView.vue'
 
 const routes = [
   {
@@ -20,6 +21,12 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { title: 'Avalia Ai! - Avalie tudo o que quiser!' }
+  },
+  {
+    path: '/search/:term',
+    name: 'Search',
+    component: SearchView,
+    meta: { title: 'Avalia Ai! - Buscar!' }
   },
   {
     path: '/empresa/:name/:id',

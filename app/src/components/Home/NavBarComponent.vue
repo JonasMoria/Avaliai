@@ -8,7 +8,7 @@
         <div ref="container" class="relative mx-auto w-7/12 md:w-5/12">
             <div class="flex items-center">
                 <input type="text" v-model="query" @input="debouncedSearch" @keydown.down="moveSelection(1)" @keydown.up="moveSelection(-1)" @keydown.enter="selectActive" class="bg-gray-50 border border-green-600 text-gray-900 text-xs md:text-sm rounded-lg focus:ring-green-500 focus:border-green-500 w-full p-2" placeholder="O que você procura?" />
-                <button type="button" class="p-2 md:p-2.5 ms-1 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800">
+                <button @click="execSearch()" type="button" class="p-2 md:p-2.5 ms-1 text-sm font-medium text-white bg-green-700 rounded-lg border border-green-700 hover:bg-green-800">
                     <svg class="w-4 h-4" viewBox="0 0 20 20" fill="none">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                     </svg>
@@ -143,6 +143,12 @@ export default {
             if (this.dropdownRef && !this.dropdownRef.contains(event.target)) {
                 this.isDropdownOpen = false;
             }
+        },
+
+        execSearch: function() {
+            router.push({
+                path: `/search/${Utils.filterWord(this.query)}`
+            });
         },
 
         debouncedSearch() {
