@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Helpers\Sanitizer;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -22,8 +23,12 @@ class UpdateEnterpriseInformationsRequest extends FormRequest {
     }
 
     public function prepareForValidation(): void {
+        $sanitizer = new Sanitizer();
+
         $this->merge([
-            'cnpj' => preg_replace('/[^\d]/', '', $this->cnpj),
+            'cnpj' => $sanitizer->sanitizeNumber($this->cnpj),
+            'name' => $sanitizer->sanitizeName($this->name),
+            'tradename' => $sanitizer->sanitizeName($this->tradename),
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Helpers\Sanitizer;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -27,6 +28,24 @@ class EnterpriseServiceRequest extends FormRequest {
             'additional' => 'nullable|string',
             'website' => 'nullable|url',
         ];
+    }
+
+    public function prepareForValidation(): void {
+        $sanitizer = new Sanitizer();
+
+        $this->merge([
+            'name' => $sanitizer->sanitizeName($this->name),
+            'type' => $sanitizer->sanitizeName($this->type),
+            'postalCode' => $sanitizer->sanitizeNumber($this->postalCode),
+            'street' => $sanitizer->sanitizeName($this->street),
+            'number' => $sanitizer->sanitizeNumber($this->number),
+            'neighborhood' => $sanitizer->sanitizeName($this->neighborhood),
+            'city' => $sanitizer->sanitizeName($this->city),
+            'phone' => $sanitizer->sanitizeNumber($this->phone),
+            'email' => trim($this->email),
+            'additional' => $sanitizer->sanitizeName($this->additional),
+            'website' => trim($this->website),
+        ]);
     }
 
     public function messages(): array {

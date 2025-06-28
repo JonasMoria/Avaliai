@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Helpers\Sanitizer;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -23,8 +24,13 @@ class RegisterUserRequest extends FormRequest {
     }
 
     public function prepareForValidation(): void {
+        $sanitizer = new Sanitizer();
+
         $this->merge([
-            'cpf' => preg_replace('/[^\d]/', '', $this->cpf),
+            'cpf' => $sanitizer->sanitizeNumber($this->cpf),
+            'name' => $sanitizer->sanitizeName($this->name),
+            'surname' => $sanitizer->sanitizeName($this->surname),
+            'email' => trim($this->email),
         ]);
     }
 
