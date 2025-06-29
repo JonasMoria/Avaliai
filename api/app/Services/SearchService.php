@@ -115,8 +115,10 @@ class SearchService {
             ], 400);
         }
 
-        $service = EnterpriseService::where('id', $id)
-                        ->first();
+        $service = EnterpriseService::with(['enterprise:id,tradename,profile_photo'])
+            ->where('id', $id)
+            ->first();
+
 
         if (!$service) {
             return response()->json([
@@ -127,6 +129,9 @@ class SearchService {
 
         if ($service->image) {
             $service->image = asset('storage/' . $service->image);
+        }
+        if (optional($service->enterprise)->profile_photo) {
+            $service->enterprise->profile_photo = asset('storage/' . $service->enterprise->profile_photo);
         }
 
         return response()->json([
