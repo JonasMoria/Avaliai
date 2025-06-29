@@ -3,6 +3,7 @@
 use App\Http\Controllers\EnterpriseController;
 use App\Http\Controllers\EnterpriseServiceController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ServiceRatingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,11 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::post('/account/update/informations', [UserController::class, 'updateInformations']);
         Route::post('/account/update/email', [UserController::class, 'updateEmail']);
         Route::post('/account/update/password', [UserController::class, 'updatePassword']);
+    });
+
+    // Rate Routes
+    Route::prefix('/rate')->group(function() {
+        Route::post('/put', [ServiceRatingController::class, 'makeRate']);
     });
 
     // Enterprise

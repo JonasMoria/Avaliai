@@ -45,12 +45,15 @@
                         </a>
                     </p>
                 </div>
+                <div class="w-full mt-5 mb-5 flex justify-center items-center">
+                    <button @click="openModalRating()" class="border-2 border-green-400 rounded-md text-green-600 px-7 py-2 hover:bg-green-300 hover:text-green-900">Avaliar!</button>
+                </div>
             </div>
-
         </section>
     </section>
 
     <FooterComponent />
+    <RateModal :config="modalRate"/>
 </section>
 </template>
 
@@ -62,6 +65,7 @@ import NotFoundAlertComponent from '@/components/Home/NotFoundAlertComponent.vue
 import api from '@/services/api';
 import Utils from '@/assets/scripts/Utils';
 import router from '@/router';
+import RateModal from '@/components/Home/modals/RateModal.vue';
 
 export default {
     name: 'ServicePage',
@@ -71,12 +75,18 @@ export default {
         FooterComponent,
         LoaderComponent,
         NotFoundAlertComponent,
+        RateModal,
     },
 
     data() {
         return {
             isRequesting: true,
             service: {},
+
+            modalRate: {
+                show: false,
+                serviceDetails: {},
+            }
         }
     },
 
@@ -100,6 +110,11 @@ export default {
             router.push({
                 path: `/empresa/${Utils.filterWord(service.enterprise.tradename)}/${service.enterprise.id}`
             });
+        },
+
+        openModalRating: function() {
+            this.modalRate.serviceDetails = this.service;
+            this.modalRate.show = true;
         }
     },
 
