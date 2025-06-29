@@ -14,12 +14,14 @@ class SearchController extends Controller {
     }
 
     public function search(Request $request): JsonResponse {
-        $term = $request->query('term');
-
-        if (!$term) {
-            return response()->json(['error' => 'Missing search term'], 400);
-        }
-
+        $term = ($request->query('term') ?: '');
         return $this->service->searchByName($term);
+    }
+
+    public function searchAll(Request $request): JsonResponse {
+        $term = ($request->query('term') ?: '');
+        $page = ($request->query('page') ?: 1);
+
+        return $this->service->searchAll($term, $page);
     }
 }

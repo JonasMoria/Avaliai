@@ -23,7 +23,7 @@ const routes = [
     meta: { title: 'Avalia Ai! - Avalie tudo o que quiser!' }
   },
   {
-    path: '/search/:term',
+    path: '/search/:term?',
     name: 'Search',
     component: SearchView,
     meta: { title: 'Avalia Ai! - Buscar!' }

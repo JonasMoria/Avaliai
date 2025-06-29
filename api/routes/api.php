@@ -13,6 +13,7 @@ Route::get('/ping', function () {
 
 // Searching Routes
 Route::get('/search', [SearchController::class, 'search']);
+Route::get('/search/all', [SearchController::class, 'searchAll']);
 
 // Public User Routes
 Route::prefix('/user')->group(function() {
