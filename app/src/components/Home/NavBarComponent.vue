@@ -185,11 +185,11 @@ export default {
         navigateTo(item) {
             if (item.type === 1) {
                 router.push({
-                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
+                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
                 });
             } else if (item.type === 2) {
                 router.push({
-                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
+                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
                 });
             }
             this.reset()

@@ -25,6 +25,11 @@ class EnterpriseService extends Model {
         'website',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function enterprise() {
         return $this->belongsTo(Enterprise::class);
     }

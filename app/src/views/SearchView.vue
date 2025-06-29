@@ -8,12 +8,7 @@
         </section>
 
         <section v-if="!isRequesting && (!results || results.length === 0)" class="flex justify-center items-center min-h-screen">
-            <div class="flex flex-col items-center gap-6">
-                <img src="@/assets/images/not_found.png" alt="content_not_found" class="max-w-xs">
-                <button @click="backHome()" class="text-green-600 font-semibold border border-green-400 text-lg px-8 py-3 rounded-md shadow hover:bg-green-500 hover:text-white">
-                    Voltar
-                </button>
-            </div>
+            <NotFoundAlertComponent/>
         </section>
 
         <section v-if="!isRequesting && (results && results.length)" class="flex w-full max-w-7xl mx-auto">
@@ -47,6 +42,7 @@ import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import api from '@/services/api';
 import router from '@/router';
 import Utils from '@/assets/scripts/Utils';
+import NotFoundAlertComponent from '@/components/Home/NotFoundAlertComponent.vue';
 
 export default {
     name: 'SearchView',
@@ -55,6 +51,7 @@ export default {
         NavBarComponent,
         FooterComponent,
         LoaderComponent,
+        NotFoundAlertComponent
     },
 
     data() {
@@ -66,20 +63,14 @@ export default {
     },
 
     methods: {
-        backHome: function () {
-            router.push({
-                path: `/`
-            });
-        },
-
         goToItem: function (item) {
             if (item.type === 1) {
                 router.push({
-                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
+                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
                 });
             } else if (item.type === 2) {
                 router.push({
-                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
+                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
                 });
             }
         },

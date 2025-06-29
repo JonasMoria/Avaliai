@@ -24,4 +24,16 @@ class SearchController extends Controller {
 
         return $this->service->searchAll($term, $page);
     }
+
+    public function getEnterpriseById($id): JsonResponse {
+        $id = (int) filter_var($id, FILTER_VALIDATE_INT);
+
+        return $this->service->getEnterpriseById($id);
+    }
+
+    public function getServiceById($id): JsonResponse {
+        $id = (int) filter_var($id, FILTER_VALIDATE_INT);
+
+        return $this->service->getServiceById($id);
+    }
 }

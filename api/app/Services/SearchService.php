@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Cache\RedisManager;
+use App\Models\Enterprise;
+use App\Models\EnterpriseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -37,7 +39,7 @@ class SearchService {
             return response()->json([
                 'status' => 400,
                 'message' => 'Termo de busca não encontrado'
-            ], 200);
+            ], 400);
         }
 
         $offset = ($page - 1) * self::LIMIT_PER_PAGE;
@@ -74,6 +76,62 @@ class SearchService {
             'per_page' => self::LIMIT_PER_PAGE,
             'total' => $total,
             'data' => $results
-        ]);
+        ], 200);
+    }
+
+    public function getEnterpriseById(int $id): JsonResponse {
+        if (!$id) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Empresa não encontrada'
+            ], 400);
+        }
+
+        $enterprise = Enterprise::where('id', $id)
+                        ->first();
+
+        if (!$enterprise) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Empresa não encontrada'
+            ], 400);
+        }
+
+        if ($enterprise->profile_photo) {
+            $enterprise->profile_photo = asset('storage/' . $enterprise->profile_photo);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $enterprise
+        ], 200); 
+    }
+
+    public function getServiceById(int $id): JsonResponse {
+        if (!$id) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Serviço não encontrada'
+            ], 400);
+        }
+
+        $service = EnterpriseService::where('id', $id)
+                        ->first();
+
+        if (!$service) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Serviço não encontrada'
+            ], 400);
+        }
+
+        if ($service->image) {
+            $service->image = asset('storage/' . $service->image);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $service
+        ], 200); 
     }
 }

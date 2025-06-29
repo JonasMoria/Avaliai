@@ -14,6 +14,8 @@ Route::get('/ping', function () {
 // Searching Routes
 Route::get('/search', [SearchController::class, 'search']);
 Route::get('/search/all', [SearchController::class, 'searchAll']);
+Route::get('/search/enterprise/{id}', [SearchController::class, 'getEnterpriseById']);
+Route::get('/search/service/{id}', [SearchController::class, 'getServiceById']);
 
 // Public User Routes
 Route::prefix('/user')->group(function() {
