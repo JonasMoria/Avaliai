@@ -18,7 +18,7 @@
 
         <section v-if="!isRequesting && (results && results.length)" class="flex w-full max-w-7xl mx-auto">
             <div class="flex flex-wrap w-full mt-5">
-                <div class="w-full max-w-40 md:max-w-56 bg-white border border-gray-200 rounded-lg shadow-sm m-2 cursor-pointer" v-for="(item, index) in results" :key="index">
+                <div @click="goToItem(item)" class="w-full max-w-40 md:max-w-56 bg-white border border-gray-200 rounded-lg shadow-sm m-2 cursor-pointer" v-for="(item, index) in results" :key="index">
                     <figure class="justify-center items-center">
                         <img class="rounded-t-lg w-full" :src="(item.image)" :alt="item.name" />
                     </figure>
@@ -46,6 +46,7 @@ import FooterComponent from '@/components/Home/FooterComponent.vue';
 import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import api from '@/services/api';
 import router from '@/router';
+import Utils from '@/assets/scripts/Utils';
 
 export default {
     name: 'SearchView',
@@ -69,6 +70,18 @@ export default {
             router.push({
                 path: `/`
             });
+        },
+
+        goToItem: function (item) {
+            if (item.type === 1) {
+                router.push({
+                    path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
+                });
+            } else if (item.type === 2) {
+                router.push({
+                    path: `/empresa/item/${Utils.filterWord(item.name)}/${item.id}`
+                });
+            }
         },
 
         loadMore: function () {

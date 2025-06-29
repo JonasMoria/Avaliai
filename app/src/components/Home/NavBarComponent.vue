@@ -149,6 +149,7 @@ export default {
             router.push({
                 path: `/search/${Utils.filterWord(this.query)}`
             });
+            this.reset();
         },
 
         debouncedSearch() {
