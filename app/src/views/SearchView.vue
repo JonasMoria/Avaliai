@@ -8,23 +8,25 @@
         </section>
 
         <section v-if="!isRequesting && (!results || results.length === 0)" class="flex justify-center items-center min-h-screen">
-            <NotFoundAlertComponent/>
+            <NotFoundAlertComponent />
         </section>
 
-        <section v-if="!isRequesting && (results && results.length)" class="flex w-full max-w-7xl mx-auto">
-            <div class="flex flex-wrap w-full mt-5">
-                <div @click="goToItem(item)" class="w-full max-w-40 md:max-w-56 bg-white border border-gray-200 rounded-lg shadow-sm m-2 cursor-pointer" v-for="(item, index) in results" :key="index">
-                    <figure class="justify-center items-center">
-                        <img class="rounded-t-lg w-full" :src="(item.image)" :alt="item.name" />
-                    </figure>
-                    <div class="p-5">
-                        <div class="text-sm font-bold tracking-tight text-gray-900">{{ item.name }}</div>
-                    </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+            <div @click="goToItem(item)" v-for="(item, index) in results" :key="item.id" class="bg-white cursor-pointer rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col
+           transition-transform duration-300 transform hover:scale-105">
+                <img :src="item.image" :alt="`Imagem de ${item.name}`" class="w-full h-48 object-cover" />
+
+                <div class="p-4 flex flex-col gap-2">
+                    <h2 class="text-lg font-bold text-gray-800">{{ item.name }}</h2>
+
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full w-max uppercase">
+                        {{ getTypeLabel(item.type) }}
+                    </span>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <div v-if="!isRequesting && (results && results.length > ((page - 1) * 30))" class="flex justify-center mt-8 mb-8">
+        <div v-if="!isRequesting && results && results.length === page * 30" class="flex justify-center mt-8 mb-8">
             <button @click="loadMore()" class="bg-green-600 text-white px-6 py-2 rounded-md shadow-md hover:bg-green-700">
                 Ver mais
             </button>
@@ -72,6 +74,17 @@ export default {
                 router.push({
                     path: `/empresa/${Utils.filterWord(item.name)}/${item.id}`
                 });
+            }
+        },
+
+        getTypeLabel(type) {
+            switch (type) {
+                case 1:
+                    return "Local/Serviço/Produto";
+                case 2:
+                    return "Empresa/Órgão Público";
+                default:
+                    return "Outro";
             }
         },
 
