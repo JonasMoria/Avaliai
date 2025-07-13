@@ -36,4 +36,10 @@ class SearchController extends Controller {
 
         return $this->service->getServiceById($id);
     }
+
+    public function getServiceRates($id): JsonResponse {
+        $id = (int) filter_var($id, FILTER_VALIDATE_INT);
+
+        return $this->service->getServiceRates($id);
+    }
 }

@@ -48,12 +48,40 @@
                 <div class="w-full mt-5 mb-5 flex justify-center items-center">
                     <button @click="openModalRating()" class="border-2 border-green-400 rounded-md text-green-600 px-7 py-2 hover:bg-green-300 hover:text-green-900">Avaliar!</button>
                 </div>
+
+                <div v-if="!serviceRates.length" class="flex items-center p-3 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+                    <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                    </svg>
+                    <div class="text-xs">
+                        <span class="font-medium">Ops!</span> Nada por aqui ainda... Estamos esperando por você para começar essa história. Avalie e construa reputações!
+                    </div>
+                </div>
+                <div v-if="serviceRates.length" v-for="(rate, index) in serviceRates" :key="rate.id" class="w-full mx-auto bg-white shadow-md rounded-2xl p-5 mb-4 flex flex-col gap-4 border border-gray-200">
+                    <div class="flex items-center gap-4">
+                        <img :src="rate.user.profile_photo ? rate.user.profile_photo : getNoPhoto()" :alt="`Foto de ${rate.user.name} ${rate.user.surname}`" class="w-12 h-12 rounded-full border-2 border-green-500 object-cover" />
+                        <div>
+                            <h3 class="text-md font-semibold text-gray-800">{{ rate.user.name }} {{ rate.user.surname }}</h3>
+                            <p class="text-xs text-gray-500">{{ rate.updated_at }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1 text-yellow-400">
+                        <svg v-for="n in rate.stars" :key="n" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                            <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
+                        </svg>
+                        <span class="ml-2 text-sm font-medium text-gray-700">({{ rate.stars }} estrela{{ rate.stars > 1 ? 's' : '' }})</span>
+                    </div>
+
+                    <p class="text-gray-800 text-base leading-relaxed italic">“{{ rate.comment }}”</p>
+                </div>
+
             </div>
         </section>
     </section>
 
     <FooterComponent />
-    <RateModal :config="modalRate"/>
+    <RateModal :config="modalRate" />
 </section>
 </template>
 
@@ -82,6 +110,7 @@ export default {
         return {
             isRequesting: true,
             service: {},
+            serviceRates: [],
 
             modalRate: {
                 show: false,
@@ -106,21 +135,40 @@ export default {
                     this.isRequesting = false;
                 });
         },
+
+        fetchRates: function (serviceId) {
+            api.get(`/search/service/${serviceId}/rates`)
+                .then((response) => {
+                    this.isRequesting = false;
+                    if (response.status == 200) {
+                        this.serviceRates = response.data.data;
+                        return;
+                    }
+                })
+                .catch((error) => {
+                    this.isRequesting = false;
+                });
+        },
+
         goToEnterprise: function (service) {
             router.push({
                 path: `/empresa/${Utils.filterWord(service.enterprise.tradename)}/${service.enterprise.id}`
             });
         },
-
-        openModalRating: function() {
+        openModalRating: function () {
             this.modalRate.serviceDetails = this.service;
             this.modalRate.show = true;
+        },
+        getNoPhoto: function () {
+            return new URL('@/assets/icons/nophoto.svg',
+                import.meta.url).href;
         }
     },
 
     watch: {
         '$route.params.id'(id) {
             this.fetchService(id);
+            this.fetchRates(id);
         }
     },
 
@@ -132,6 +180,7 @@ export default {
         }
 
         this.fetchService(serviceId);
+        this.fetchRates(serviceId);
     }
 }
 </script>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Cache\RedisManager;
 use App\Models\Enterprise;
 use App\Models\EnterpriseService;
+use App\Models\ServiceRating;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -137,6 +138,47 @@ class SearchService {
         return response()->json([
             'status' => 200,
             'data' => $service
+        ], 200); 
+    }
+
+    public function getServiceRates(int $id): JsonResponse {
+        if (!$id) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Serviço não encontrada'
+            ], 400);
+        }
+
+        $ratings = ServiceRating::with('user')
+            ->where('enterprise_service_id', $id)
+            ->orderByDesc('updated_at')
+            ->get()
+            ->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'user_id' => $rating->user_id,
+                    'enterprise_service_id' => $rating->enterprise_service_id,
+                    'stars' => $rating->stars,
+                    'comment' => $rating->comment,
+                    'updated_at' => $rating->updated_at->format('d-m-Y H:i:s'),
+                    'user' => [
+                        'name' => $rating->user->name,
+                        'surname' => $rating->user->surname,
+                        'profile_photo' => ($rating->user->profile_photo ? asset('storage/' . $rating->user->profile_photo) : ''),
+                    ],
+                ];
+            });
+
+        if (!$ratings) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Nenhuma avaliação encontrada'
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $ratings
         ], 200); 
     }
 }
