@@ -20,51 +20,66 @@
             </div>
         </div>
 
+        <div class="mx-auto max-w-lg mb-5">
+            <AlertBoxComponent :alert="alert" />
+        </div>
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 p-4">
             <div v-for="(rating, index) in reviews" :key="index" class="bg-white cursor-pointer rounded-2xl shadow-md border border-gray-200 overflow-hidden flex flex-col transition-transform duration-300 transform hover:scale-105">
                 <img :src="rating.service.image" :alt="`Imagem de ${rating.service.name}`" class="w-full h-24 md:h-36 object-cover" />
 
-                <div class="p-4 flex flex-col gap-2">
-                    <h2 class="text-sm md:text-md font-bold text-gray-800">
-                        {{ rating.service.name }}
-                    </h2>
+                <div class="p-4 flex flex-col justify-between h-full">
+                    <!-- Conteúdo principal -->
+                    <div class="flex-grow flex flex-col gap-2">
+                        <h2 class="text-sm md:text-md font-bold text-gray-800">
+                            {{ rating.service.name }}
+                        </h2>
 
-                    <div class="flex items-center gap-1 text-yellow-400">
-                        <template v-for="n in 5">
-                            <svg v-if="n <= rating.stars" class="w-5 h-5 fill-current" viewBox="0 0 20 20" :key="`filled-${n}`">
-                                <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
-                            </svg>
-                            <svg v-else class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20" :key="`empty-${n}`">
-                                <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
-                            </svg>
-                        </template>
+                        <div class="flex items-center gap-1 text-yellow-400">
+                            <template v-for="n in 5">
+                                <svg v-if="n <= rating.stars" class="w-5 h-5 fill-current" viewBox="0 0 20 20" :key="`filled-${n}`">
+                                    <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
+                                </svg>
+                                <svg v-else class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20" :key="`empty-${n}`">
+                                    <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
+                                </svg>
+                            </template>
+                        </div>
+
+                        <p class="text-gray-700 italic text-sm md:text-md">
+                            "{{ rating.comment }}"
+                        </p>
                     </div>
 
-                    <p class="text-gray-700 italic text-sm md:text-md">"{{ rating.comment }}"</p>
-                    <p class="text-xs text-gray-500">🕒 {{ rating.updated_at }}</p>
-                    <div class="flex gap-2 mt-3">
-                        <button @click="openModalEditReview(rating)" class="flex-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1 rounded-md text-sm font-medium">
-                            Editar
-                        </button>
-                        <button @click="removeReview(rating.id)" class="flex-1 bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-md text-sm font-medium">
-                            Excluir
-                        </button>
+                    <div class="mt-5">
+                        <p class="text-xs text-gray-500 mb-2">🕒 {{ rating.updated_at }}</p>
+                        <div class="flex gap-2">
+                            <button @click="openModalEditReview(rating)" class="flex-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1 rounded-md text-sm font-medium">
+                                Editar
+                            </button>
+                            <button @click="removeReview(index)" class="flex-1 bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-md text-sm font-medium">
+                                Excluir
+                            </button>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
     </section>
-
+    <ConfirmDeleteModal :modal-confirm-settings="modalDeleteSettings" :confirm-delete="removeReview" />
 </section>
 </template>
 
 <script>
 import Utils from '@/assets/scripts/Utils';
+import AlertBoxComponent from '@/components/Home/AlertBoxComponent.vue';
 import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import NavBarComponent from '@/components/Home/NavBarComponent.vue';
 import NotFoundAlertComponent from '@/components/Home/NotFoundAlertComponent.vue';
 import BreadCrumbComponent from '@/components/painel/BreadCrumbComponent.vue';
+import ConfirmDeleteModal from '@/components/painel/modals/ConfirmDeleteModal.vue';
 import api from '@/services/api';
 
 export default {
@@ -73,12 +88,24 @@ export default {
         NavBarComponent,
         BreadCrumbComponent,
         LoaderComponent,
-        NotFoundAlertComponent
+        NotFoundAlertComponent,
+        ConfirmDeleteModal,
+        AlertBoxComponent,
     },
 
     data() {
         return {
             isRequesting: true,
+            modalDeleteSettings: {
+                show: false,
+                alertMessage: '',
+                id: 0,
+            },
+            alert: {
+                show: false,
+                success: false,
+                message: 'teste'
+            },
             reviews: [],
         }
     },
@@ -89,6 +116,44 @@ export default {
                 name: 'Avaliações',
                 path: '/usuario/avaliacoes'
             }];
+        },
+
+        removeReview: function (index, isConfirmed = false) {
+            const item = this.reviews[index];
+
+            if (!isConfirmed) {
+                this.modalDeleteSettings.alertMessage = `Tem certeza que deseja remover sua avaliação sobre "${item.service.name}"?`;
+                this.modalDeleteSettings.id = index;
+                this.modalDeleteSettings.show = true;
+                return;
+            }
+
+            this.modalDeleteSettings.show = false;
+            this.isRequesting = true;
+            api.delete(`/review/delete/${item.id}`, {
+                headers: {
+                    Authorization: `Bearer ${Utils.getUserSessionToken()}`,
+                }
+            }).then((response) => {
+                this.isRequesting = false;
+
+                if (response.status == 200) {
+                    this.alert.show = true;
+                    this.alert.success = true;
+                    this.alert.message = response.data.message;
+
+                    this.reviews.splice(index, 1);
+                    return;
+                }
+
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.message = (response.data.message || 'Não foi possível realizar essa ação no momento. Por favor aguarde ou entre em contato com nosso suporte!');
+            }).catch((error) => {
+                this.isRequesting = false;
+                this.alert.show = true;
+                this.alert.message = 'Não foi possível realizar essa ação no momento. Por favor aguarde ou entre em contato com nosso suporte!';
+            });
         },
 
         fetchReviews: function () {

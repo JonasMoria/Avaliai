@@ -100,7 +100,7 @@ export default {
             this.isRequesting = true;
             const token = Utils.getUserSessionToken();
 
-            api.post('/rate/put', {
+            api.post('/review/put', {
                 enterprise_service_id: this.config.serviceDetails.id,
                 stars: this.rating,
                 comment: (this.comment ? this.comment : ''),

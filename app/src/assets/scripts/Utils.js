@@ -111,6 +111,8 @@ const Utils = {
                     headers: {
                         Authorization: `Bearer ${userSession.token}`
                     }
+                }).catch((error) => {
+                    return;
                 });
             }
 
@@ -119,6 +121,8 @@ const Utils = {
                     headers: {
                         Authorization: `Bearer ${enterpriseSession.token}`
                     }
+                }).catch((error) => {
+                    return;
                 });
             }
         } catch (error) {
