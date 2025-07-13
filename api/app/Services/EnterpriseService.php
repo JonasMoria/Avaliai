@@ -7,6 +7,7 @@ use App\Mail\EmailAltered;
 use App\Mail\PasswordAltered;
 use App\Mail\WelcomeEnterpriseMail;
 use App\Models\Enterprise;
+use App\Models\EnterpriseService as ModelsEnterpriseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -196,6 +197,41 @@ class EnterpriseService {
         return response()->json([
             'status' => 200,
             'message' => 'Senha de acesso alterada com sucesso!',
+        ], 200);
+    }
+
+    public function listServices(int $id): JsonResponse {
+        $services = ModelsEnterpriseService::where('enterprise_id', $id)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($service) {
+                return [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'image' => ($service->image ? asset('storage/' . $service->image) :''),
+                    'type' => $service->type,
+                    'postalCode' => $service->postalCode,
+                    'street' => $service->street,
+                    'number' => $service->number,
+                    'neighborhood' => $service->neighborhood,
+                    'city' => $service->city,
+                    'state' => $service->state,
+                    'phone' => $service->phone,
+                    'email' => $service->email,
+                    'website' => $service->website,
+                ];
+            });  
+
+        if (!$services) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Nenhum serviço ou produto dessa empresa encontrados!',
+            ], 400);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $services,
         ], 200);
     }
 }

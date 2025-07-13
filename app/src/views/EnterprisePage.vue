@@ -28,6 +28,44 @@
                 </div>
             </div>
 
+            <div v-if="!services.length" class="flex items-center p-3 mt-10 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50" role="alert">
+                <svg class="shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <div class="text-xs">
+                    <span class="font-medium">Ops!</span> Nada por aqui ainda... Em breve essa empresa deve cadastrar seus serviços ou produtos!
+                </div>
+            </div>
+
+            <div v-if="services.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                <div @click="goToService(service.id, service.name)" v-for="(service, index) in services" :key="index" class="bg-white cursor-pointer rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col transition-transform duration-300 transform hover:scale-105">
+                    <img :src="service.image" :alt="`Imagem de ${service.name}`" class="w-full h-36 object-cover" />
+
+                    <div class="p-4 flex flex-col gap-2">
+                        <h2 class="text-md font-bold text-gray-800">{{ service.name }}</h2>
+
+                        <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full w-max uppercase">
+                            {{ service.type }}
+                        </span>
+
+                        <p class="text-xs text-gray-600 leading-snug">
+                            📍 {{ service.street }}, {{ service.number }}<br>
+                            {{ service.neighborhood }} - {{ service.city }}/{{ service.state }}<br>
+                            CEP: {{ formatPostalCode(service.postalCode) }}
+                        </p>
+
+                        <p class="text-xs text-gray-600">
+                            📞 {{ formatPhone(service.phone) }}<br>
+                            ✉️ {{ service.email }}
+                        </p>
+
+                        <a :href="service.website" target="_blank" class="mt-2 text-xs font-medium text-blue-600 hover:underline">
+                            🌐 Acessar site
+                        </a>
+                    </div>
+                </div>
+            </div>
+
         </section>
     </section>
 
@@ -42,6 +80,7 @@ import LoaderComponent from '@/components/Home/LoaderComponent.vue';
 import NotFoundAlertComponent from '@/components/Home/NotFoundAlertComponent.vue';
 import api from '@/services/api';
 import Utils from '@/assets/scripts/Utils';
+import router from '@/router';
 
 export default {
     name: 'EnterprisePage',
@@ -57,6 +96,7 @@ export default {
         return {
             isRequesting: true,
             enterprise: {},
+            services: [],
         }
     },
 
@@ -74,12 +114,40 @@ export default {
                 .catch((error) => {
                     this.isRequesting = false;
                 });
+        },
+
+        fetchServices: function (enterpriseId) {
+            api.get(`/enterprise/${enterpriseId}/services/list`)
+                .then((response) => {
+                    this.isRequesting = false;
+                    if (response.status == 200) {
+                        this.services = response.data.data;
+                        return;
+                    }
+                })
+                .catch((error) => {
+                    this.isRequesting = false;
+                });
+        },
+
+        goToService: function (id, name) {
+            router.push({
+                path: `/empresa/item/${Utils.filterWord(name)}/${id}`
+            });
+        },
+
+        formatPhone: function (phone) {
+            return Utils.maskPhone(phone);
+        },
+        formatPostalCode: function (cep) {
+            return Utils.maskCep(cep);
         }
     },
 
     watch: {
         '$route.params.id'(id) {
             this.fetchEnterprise(id);
+            this.fetchServices(id);
         }
     },
 
@@ -91,6 +159,7 @@ export default {
         }
 
         this.fetchEnterprise(enterpriseId);
+        this.fetchServices(enterpriseId);
     }
 }
 </script>

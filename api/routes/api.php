@@ -21,8 +21,6 @@ Route::prefix('/search')->group(function()  {
     Route::get('/service/{id}/rates', [SearchController::class, 'getServiceRates']);
 });
 
-
-
 // Public User Routes
 Route::prefix('/user')->group(function() {
     Route::post('/register', [UserController::class, 'register']);
@@ -33,6 +31,7 @@ Route::prefix('/user')->group(function() {
 Route::prefix('/enterprise')->group(function() {
     Route::post('/register', [EnterpriseController::class, 'register']);
     Route::post('/login', [EnterpriseController::class, 'login']);
+    Route::get('{id}/services/list', [EnterpriseController::class, 'listServices']);
 });
 
 // Private Routes

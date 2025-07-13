@@ -35,6 +35,12 @@ class EnterpriseController extends Controller {
         return $this->enterpriseService->login($request->validated());
     }
 
+    public function listServices(int $id) {
+        $id = (int) filter_var($id, FILTER_VALIDATE_INT);
+
+        return $this->enterpriseService->listServices($id);
+    }
+
     public function me(): JsonResponse {
         $enterprise = Auth::user();
 
