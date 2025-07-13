@@ -141,7 +141,7 @@ class SearchService {
         ], 200); 
     }
 
-    public function getServiceRates(int $id): JsonResponse {
+    public function getServiceReviews(int $id): JsonResponse {
         if (!$id) {
             return response()->json([
                 'status' => 400,

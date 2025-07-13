@@ -18,7 +18,7 @@ Route::prefix('/search')->group(function()  {
     Route::get('/all', [SearchController::class, 'searchAll']);
     Route::get('/enterprise/{id}', [SearchController::class, 'getEnterpriseById']);
     Route::get('/service/{id}', [SearchController::class, 'getServiceById']);
-    Route::get('/service/{id}/rates', [SearchController::class, 'getServiceRates']);
+    Route::get('/service/{id}/rates', [SearchController::class, 'getServiceReviews']);
 });
 
 // Public User Routes
@@ -45,6 +45,8 @@ Route::middleware(['auth:sanctum'])->group(function() {
         Route::post('/account/update/informations', [UserController::class, 'updateInformations']);
         Route::post('/account/update/email', [UserController::class, 'updateEmail']);
         Route::post('/account/update/password', [UserController::class, 'updatePassword']);
+
+        Route::get('/reviews/get', [UserController::class, 'getMyReviews']);
     });
 
     // Rate Routes

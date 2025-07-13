@@ -17,8 +17,8 @@
 
             <ul v-if="results.length && showSuggestions" class="absolute z-10 w-full md:w-11/12 bg-white border border-gray-200 rounded-lg shadow-lg max-h-80 overflow-auto">
                 <li v-for="(item, index) in results" :key="item.id" :class="['flex items-center p-2 cursor-pointer hover:bg-gray-100', index === activeIndex ? 'bg-gray-100' : '']" @click="navigateTo(item)" @mouseover="activeIndex = index">
-                    <img :src="item.imagePath" alt="" class="w-10 h-10 object-cover rounded mr-3" />
-                    <span class="text-sm text-gray-700">{{ item.name }}</span>
+                    <img :src="item.imagePath" alt="" class="w-6 h-6 md:w-10 md:h-10 object-cover rounded mr-3" />
+                    <span class="text-xs md:text-sm text-gray-700">{{ item.name }}</span>
                 </li>
             </ul>
         </div>

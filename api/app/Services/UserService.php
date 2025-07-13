@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Mail\EmailAltered;
 use App\Mail\PasswordAltered;
 use App\Mail\WelcomeUserMail;
+use App\Models\ServiceRating;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -159,5 +161,39 @@ class UserService {
             'status' => 200,
             'message' => 'Senha de acesso alterada com sucesso!',
         ], 200);
+    }
+
+    public function getMyReviews(int $userId): JsonResponse {
+        if (!$userId) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Dados de cadastro não foram encontrados. Por favor, faça login novamente.',
+            ], 401);
+        }
+
+        $oneYearAgo = Carbon::now()->subYear();
+
+        $reviews = ServiceRating::where('user_id', $userId)
+            ->where('updated_at', '>=', $oneYearAgo)
+            ->with('enterpriseService')
+            ->get()
+            ->map(function ($rating) {
+                return [
+                    'id' => $rating->id,
+                    'stars' => $rating->stars,
+                    'comment' => $rating->comment,
+                    'updated_at' => $rating->updated_at->format('d-m-Y H:i:s'),
+                    'service' => [
+                        'id' => $rating->enterpriseService->id,
+                        'name' => $rating->enterpriseService->name,
+                        'image' => asset('storage/' . $rating->enterpriseService->image),
+                    ]
+                ];
+            });
+
+        return response()->json([
+            'status' => 200,
+            'data' => $reviews,
+        ], 200);  
     }
 }

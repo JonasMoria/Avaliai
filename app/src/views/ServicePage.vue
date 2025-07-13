@@ -67,9 +67,14 @@
                     </div>
 
                     <div class="flex items-center gap-1 text-yellow-400">
-                        <svg v-for="n in rate.stars" :key="n" class="w-5 h-5 fill-current" viewBox="0 0 20 20">
-                            <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
-                        </svg>
+                        <template v-for="n in 5">
+                            <svg v-if="n <= rate.stars" class="w-5 h-5 fill-current" viewBox="0 0 20 20" :key="`filled-${n}`">
+                                <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
+                            </svg>
+                            <svg v-else class="w-5 h-5 text-gray-300" fill="currentColor" viewBox="0 0 20 20" :key="`empty-${n}`">
+                                <path d="M10 15l-5.878 3.09L5.5 12.18.999 7.91l6.08-.885L10 1l2.921 6.025 6.08.885-4.5 4.27 1.378 5.91z" />
+                            </svg>
+                        </template>
                         <span class="ml-2 text-sm font-medium text-gray-700">({{ rate.stars }} estrela{{ rate.stars > 1 ? 's' : '' }})</span>
                     </div>
 
