@@ -24,6 +24,11 @@ class EnterpriseServiceController extends Controller {
         return $this->service->getServicesByEnterprise($enterprise);
     }
 
+    public function getAnalytics(): JsonResponse {
+        $enterprise = Auth::user();
+        return $this->service->getAnalytics($enterprise);
+    }
+
     public function update(EnterpriseServiceRequest $request, int $id): JsonResponse {
         $enterprise = Auth::user();
         return $this->service->updateService($enterprise->id, $id, $request->validated(), $request->file('image'));

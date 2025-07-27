@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Facades\SyncQueue;
 use App\Models\EnterpriseService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class EnterpriseServiceService {
@@ -52,6 +53,29 @@ class EnterpriseServiceService {
             'message' => 'Serviços obtidos com sucesso.',
             'data' => $list
         ], 201);
+    }
+
+    public function getAnalytics($enterprise): JsonResponse {
+        $ranking = [];
+
+        $ranking = EnterpriseService::select([
+                'enterprise_services.id',
+                'enterprise_services.name',
+                DB::raw('COUNT(service_ratings.id) as total_ratings'),
+                DB::raw('AVG(service_ratings.stars) as average_stars')
+            ])
+            ->leftJoin('service_ratings', 'service_ratings.enterprise_service_id', '=', 'enterprise_services.id')
+            ->where('enterprise_services.enterprise_id', $enterprise->id)
+            ->groupBy('enterprise_services.id', 'enterprise_services.name')
+            ->orderByDesc('average_stars')
+            ->orderByDesc('total_ratings')
+            ->get();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Dados obtidos com sucesso.',
+            'data' => $ranking
+        ], 200);
     }
 
     protected function numbersOnly(string $phone): string {
