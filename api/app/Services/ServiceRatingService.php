@@ -42,6 +42,31 @@ class ServiceRatingService {
         ], 201);
     }
 
+    public function updateUserReview(int $userId, int $reviewId, array $data): JsonResponse {
+        $review = ServiceRating::where('id', $reviewId)
+                    ->where('user_id', $userId)
+                    ->first();
+
+        if (!$review) {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Avaliação não encontrada.',
+            ], 401);
+        }
+
+        $review->update($data);
+
+        $reviewUpdated = ServiceRating::where('id', $reviewId)
+            ->where('user_id', $userId)
+            ->first();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Avaliação alterada com sucesso.',
+            'data' => $reviewUpdated
+        ], 200);
+    }
+
     public function removeUserReview(int $userId, int $reviewId): JsonResponse {
         $review = ServiceRating::where('id', $reviewId)
                     ->where('user_id', $userId)
@@ -58,6 +83,7 @@ class ServiceRatingService {
         return response()->json([
             'status' => 200,
             'message' => 'Avaliação removida com sucesso.',
+            'data' => []
         ], 200);
     }
 }

@@ -52,6 +52,7 @@ Route::middleware(['auth:sanctum'])->group(function() {
     // Rate Routes
     Route::prefix('/review')->group(function() {
         Route::post('/put', [ServiceRatingController::class, 'putUserReview']);
+        Route::post('/update/{id}', [ServiceRatingController::class, 'updateUserReview']);
         Route::delete('/delete/{id}', [ServiceRatingController::class, 'removeUserReview']);
     });
 

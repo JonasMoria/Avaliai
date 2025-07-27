@@ -19,6 +19,12 @@ class ServiceRatingController extends Controller {
         return $this->service->putUserReview($userId, $request->validated());
     }
 
+    public function updateUserReview(RateRequest $request, int $reviewId): JsonResponse {
+        $userId = Auth::user()->id;
+        return $this->service->updateUserReview($userId, $reviewId, $request->validated());
+    }
+
+
     public function removeUserReview(int $reviewId): JsonResponse {
         $userId = Auth::user()->id;
         return $this->service->removeUserReview($userId, $reviewId);

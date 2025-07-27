@@ -54,7 +54,7 @@
                     <div class="mt-5">
                         <p class="text-xs text-gray-500 mb-2">🕒 {{ rating.updated_at }}</p>
                         <div class="flex gap-2">
-                            <button @click="openModalEditReview(rating)" class="flex-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1 rounded-md text-sm font-medium">
+                            <button @click="openModalEditReview(index)" class="flex-1 bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-3 py-1 rounded-md text-sm font-medium">
                                 Editar
                             </button>
                             <button @click="removeReview(index)" class="flex-1 bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded-md text-sm font-medium">
@@ -69,6 +69,7 @@
 
     </section>
     <ConfirmDeleteModal :modal-confirm-settings="modalDeleteSettings" :confirm-delete="removeReview" />
+    <RateModal :config="modalRate" @changeReview="changeReview" />
 </section>
 </template>
 
@@ -76,6 +77,7 @@
 import Utils from '@/assets/scripts/Utils';
 import AlertBoxComponent from '@/components/Home/AlertBoxComponent.vue';
 import LoaderComponent from '@/components/Home/LoaderComponent.vue';
+import RateModal from '@/components/Home/modals/RateModal.vue';
 import NavBarComponent from '@/components/Home/NavBarComponent.vue';
 import NotFoundAlertComponent from '@/components/Home/NotFoundAlertComponent.vue';
 import BreadCrumbComponent from '@/components/painel/BreadCrumbComponent.vue';
@@ -91,6 +93,7 @@ export default {
         NotFoundAlertComponent,
         ConfirmDeleteModal,
         AlertBoxComponent,
+        RateModal,
     },
 
     data() {
@@ -105,6 +108,11 @@ export default {
                 show: false,
                 success: false,
                 message: 'teste'
+            },
+            modalRate: {
+                show: false,
+                isEdit: true,
+                serviceDetails: {},
             },
             reviews: [],
         }
@@ -154,6 +162,35 @@ export default {
                 this.alert.show = true;
                 this.alert.message = 'Não foi possível realizar essa ação no momento. Por favor aguarde ou entre em contato com nosso suporte!';
             });
+        },
+
+        openModalEditReview: function (index) {
+            const item = this.reviews[index];
+
+            this.modalRate.serviceDetails.name = item.service.name;
+            this.modalRate.serviceDetails.stars = item.stars;
+            this.modalRate.serviceDetails.comment = item.comment;
+            this.modalRate.serviceDetails.enterprise_id = item.service.id;
+            this.modalRate.serviceDetails.reviewId = item.id;
+
+            this.modalRate.isEdit = true;
+            this.modalRate.show = true;
+        },
+
+        changeReview: function (review) {
+            const reviewId = review.id;
+
+            const index = this.reviews.findIndex(r => r.id === reviewId);
+
+            if (index !== -1) {
+                const original = this.reviews[index];
+
+                for (const key in review) {
+                    if (review.hasOwnProperty(key) && original[key] !== review[key]) {
+                        this.reviews[index][key] = review[key];
+                    }
+                }
+            }
         },
 
         fetchReviews: function () {

@@ -2,7 +2,7 @@
 <div :class="config.show ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'" class="fixed inset-0 z-[999] grid w-screen place-items-center bg-black bg-opacity-60 backdrop-blur-sm transition-opacity duration-300 overflow-y-auto">
     <div class="relative m-4 p-4 w-2/5 min-w-[90%] max-w-[90%] md:min-w-[40%] md:max-w-[40%] rounded-lg bg-white shadow-sm">
         <div class="flex shrink-0 items-center pb-4 text-md font-semibold text-slate-800">
-            Avaliar "{{ config.serviceDetails.name }}"
+            {{ config.isEdit ? 'Editar Avaliação de' : 'Avaliar' }} "{{ config.serviceDetails.name }}"
         </div>
 
         <section v-if="isRequesting">
@@ -31,7 +31,7 @@
                     Cancelar
                 </button>
                 <button v-if="hasUserLogged" @click="submitReview()" class="rounded-md bg-green-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-green-700 focus:shadow-none active:bg-green-700 hover:bg-green-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2" type="button">
-                    Enviar
+                    {{ config.isEdit ? 'Editar' : 'Enviar' }}
                 </button>
             </div>
         </section>
@@ -44,14 +44,12 @@ import localBase from '@/assets/scripts/LocalBase';
 import AlertBoxComponent from '../AlertBoxComponent.vue';
 import api from '@/services/api';
 import LoaderComponent from '../LoaderComponent.vue';
-import {
-    data
-} from 'autoprefixer';
 import Utils from '@/assets/scripts/Utils';
 
 export default {
     name: 'RateModal',
     props: ['config'],
+    emits: ['changeReview'],
     components: {
         AlertBoxComponent,
         LoaderComponent
@@ -69,12 +67,28 @@ export default {
                 message: ''
             },
 
-            rating: 0,
-            hoverRating: 0,
-            comment: "",
+            rating: (this.config.isEdit ? this.config.serviceDetails.stars : 0),
+            hoverRating: (this.config.isEdit ? this.config.serviceDetails.stars : 0),
+            comment: (this.config.isEdit ? this.config.serviceDetails.comment : ''),
             submitted: false,
 
             postedReviews: [],
+        }
+    },
+
+    watch: {
+        config: {
+            handler(newVal) {
+                if (newVal.show && newVal.isEdit) {
+                    this.rating = newVal.serviceDetails.stars || 0;
+                    this.hoverRating = newVal.serviceDetails.stars || 0;
+                    this.comment = newVal.serviceDetails.comment || '';
+                } else if (newVal.show && !newVal.isEdit) {
+                    this.resetRating();
+                }
+            },
+            deep: true,
+            immediate: true
         }
     },
 
@@ -100,8 +114,14 @@ export default {
             this.isRequesting = true;
             const token = Utils.getUserSessionToken();
 
-            api.post('/review/put', {
-                enterprise_service_id: this.config.serviceDetails.id,
+            let url = '/review/put';
+            if (this.config.isEdit !== undefined && this.config.isEdit == true) {
+                url = `/review/update/${this.config.serviceDetails.reviewId}`;
+            }
+
+            api.post(url, {
+                isEdit: (this.config.isEdit !== undefined && this.config.isEdit ? true : false),
+                enterprise_service_id: this.config.serviceDetails.enterprise_id,
                 stars: this.rating,
                 comment: (this.comment ? this.comment : ''),
             }, {
@@ -112,9 +132,11 @@ export default {
             }).then((response) => {
                 this.isRequesting = false;
 
-                if (response.status == 201) {
-                    const rate = response.data;
+                if ([200, 201].includes(Number(response.status))) {
+                    const rate = response.data.data;
                     this.postedReviews.push(rate);
+
+                    this.$emit('changeReview', rate);
 
                     this.alert.show = true;
                     this.alert.success = true;

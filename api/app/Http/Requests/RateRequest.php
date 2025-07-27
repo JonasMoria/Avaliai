@@ -25,8 +25,9 @@ class RateRequest extends FormRequest {
         $validator->after(function ($validator) {
             $user = $this->user();
             $serviceId = intval($this->input('enterprise_service_id'));
+            $isEdit = boolval($this->input('isEdit'));
 
-            if ($user && $serviceId) {
+            if (!$isEdit && $user && $serviceId) {
                 $alreadyRated = ServiceRating::where('user_id', $user->id)
                     ->where('enterprise_service_id', $serviceId)
                     ->exists();
