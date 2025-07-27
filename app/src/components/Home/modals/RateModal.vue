@@ -116,15 +116,17 @@ export default {
 
             let url = '/review/put';
             if (this.config.isEdit !== undefined && this.config.isEdit == true) {
-                url = `/review/update/${this.config.serviceDetails.reviewId}`;
+                url = `/review/update/${this.config.serviceDetails.id}`;
             }
 
-            api.post(url, {
+            const payload = {
                 isEdit: (this.config.isEdit !== undefined && this.config.isEdit ? true : false),
-                enterprise_service_id: this.config.serviceDetails.enterprise_id,
+                enterprise_service_id: (this.config.isEdit !== undefined && this.config.isEdit ? this.config.serviceDetails.enterprise_id : this.config.serviceDetails.id),
                 stars: this.rating,
                 comment: (this.comment ? this.comment : ''),
-            }, {
+            };
+
+            api.post(url, payload, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`

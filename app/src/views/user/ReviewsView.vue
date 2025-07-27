@@ -171,7 +171,7 @@ export default {
             this.modalRate.serviceDetails.stars = item.stars;
             this.modalRate.serviceDetails.comment = item.comment;
             this.modalRate.serviceDetails.enterprise_id = item.service.id;
-            this.modalRate.serviceDetails.reviewId = item.id;
+            this.modalRate.serviceDetails.id = item.id;
 
             this.modalRate.isEdit = true;
             this.modalRate.show = true;
